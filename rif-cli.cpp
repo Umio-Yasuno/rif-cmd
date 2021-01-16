@@ -1,16 +1,18 @@
-#include "include/RadeonImageFilters.h"
+#include "RadeonImageFilter/include/RadeonImageFilters.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_ONLY_JPEG
 #define STBI_ONLY_PNG
-#include "../stb/stb_image.h"
+#include "RadeonImageFilter/samples/ImageTools/stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "../stb/stb_image_write.h"
+#include "RadeonImageFilter/samples/ImageTools/stb_image_write.h"
 
-#include "./samples/ImageTools/ImageTools.h"
+#include "RadeonImageFilter/samples/ImageTools/ImageTools.h"
 
 #include <stdio.h>
 #include <string.h>
+
+// g++ rif-cli.cpp -o rif-cli -L./RadeonImageFilter/Ubuntu18/Dynamic/ -L./RadeonImageFilter/Ubuntu18/Static/ -lRadeonImageFilters
 
 int main(int argc, char *argv[]) {
    int i;

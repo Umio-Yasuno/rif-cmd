@@ -1,0 +1,3 @@
+[submodule "RadeonImageFilter"]
+	path = RadeonImageFilter
+	url = https://github.com/GPUOpen-LibrariesAndSDKs/RadeonImageFilter
