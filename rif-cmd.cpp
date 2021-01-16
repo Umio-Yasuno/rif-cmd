@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <string.h>
 
-// g++ rif-cli.cpp -o rif-cli -L./RadeonImageFilter/Ubuntu18/Dynamic/ -L./RadeonImageFilter/Ubuntu18/Static/ -lRadeonImageFilters
+// g++ rif-cmd.cpp -L./RadeonImageFilter/Ubuntu18/Dynamic/ -L./RadeonImageFilter/Ubuntu18/Static/ -lRadeonImageFilters -o rif-cmd
 
 int main(int argc, char *argv[]) {
    int i;
@@ -25,28 +25,22 @@ int main(int argc, char *argv[]) {
    for (i=1; i < argc; i++) {
       printf("%s: ", argv[i]);
       if (!strcmp("-i", argv[i])) {
-         printf("input\n");
          if (i + 1 < argc) {
             i++;
             input_path = argv[i];
-            printf("input path: %s\n", input_path);
          } else {
             printf("Error: Please input image path\n");
             return -1;
          }
       } else if (!strcmp("-o", argv[i])) {
-         printf("output\n");
          if (i + 1 < argc) {
             i++;
             output_path = argv[i];
-            printf("output path: %s\n", output_path);
          }
       } else if (!strcmp("-f", argv[i]) || !strcmp("--filter", argv[i])) {
-         printf("filter\n");
          if (i + 1 < argc) {
             i++;
             filter_name = argv[i];
-            printf("filter name: %s\n", filter_name);
          } else {
             printf("Error: Please filter name\n");
             return -1;
@@ -699,12 +693,16 @@ if (filter_name) {
       printf("  Unknown filter name: %s\n", filter_name);
       return -1;
    }
+
 } else {
    return -1;
 }
 
    status = rifCommandQueueAttachImageFilter(queue, filter, inputImage, outputImage);
-      if (status != RIF_SUCCESS) return -1;
+      if (status != RIF_SUCCESS) {
+         printf("rifCommandQueueAttachImageFilter fail\n");
+         return -1;
+      }
 
 // Execute queue
    status = rifContextExecuteCommandQueue(context, queue, nullptr, nullptr, nullptr);
