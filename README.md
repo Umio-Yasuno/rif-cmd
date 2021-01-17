@@ -30,7 +30,7 @@ FLAGS:
 
   * Linux x86_64 (OpenCL)
 
-  RIF SDK is cross-platform. (DX12, OpenCL, Metal)  
+  RIF SDK is a cross-platform. (DX12, OpenCL, Metal)  
   I can't verify it because I don't have the environment, but I'll add support.  
 
 ## Known Issues
