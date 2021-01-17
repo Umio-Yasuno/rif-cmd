@@ -1,6 +1,17 @@
 # Filters
 
- * [Filters — AMD Radeon ProRender](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters.html)
+[Filters — AMD Radeon ProRender](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters.html)
+
+ * [Rotating Filters](https://github.com/Umio-Yasuno/rif-cmd/blob/main/FILTERS.md#rotating-filters)
+ * [Blurring and Resampling Filters](https://github.com/Umio-Yasuno/rif-cmd/blob/main/FILTERS.md#blurring-and-resampling-filters)
+ * [Tone Mapping and Color Changing Filters](https://github.com/Umio-Yasuno/rif-cmd/blob/main/FILTERS.md#tone-mapping-and-color-changing-filters)
+ * [Denoising Filters](https://github.com/Umio-Yasuno/rif-cmd/blob/main/FILTERS.md#denoising-filters)
+ * [Antialiasing Filters](https://github.com/Umio-Yasuno/rif-cmd/blob/main/FILTERS.md#antialiasing-filters)
+ * [Edge Detection](https://github.com/Umio-Yasuno/rif-cmd/blob/main/FILTERS.md#edge-detection)
+ * [Blending Filters](https://github.com/Umio-Yasuno/rif-cmd/blob/main/FILTERS.md#blending-filters)
+ * [Image Enhance Filters](https://github.com/Umio-Yasuno/rif-cmd/blob/main/FILTERS.md#image-enhance-filters)
+ * [Other Filters](https://github.com/Umio-Yasuno/rif-cmd/blob/main/FILTERS.md#other-filters)
+
 
 ## Rotating Filters
 
@@ -50,8 +61,8 @@
 | Bilateral Denoiser Filter             | not yet implemented <!-- bilateral_denoise -->    | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/bilateral_denoiser.html) |
 | Edge-avoiding À-Trous Wavelet Filter  | not yet implemented <!-- eaw_denoise -->          | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/edge_avoiding_wavelet.html) |
 | Local Weighted Regression Filter      | not yet implemented <!-- eaw_denoise -->          | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/local_weighted_regression.html) |
-| Median Denoiser Filter¶               | not yet implemented <!-- median_denoise -->       | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/median_denoiser.html) |
-| Temporal Accumulation Filter¶         | not yet implemented <!-- median_denoise -->       | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/temporal_accumulation.html)
+| Median Denoiser Filter               | not yet implemented <!-- median_denoise -->       | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/median_denoiser.html) |
+| Temporal Accumulation Filter         | not yet implemented <!-- median_denoise -->       | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/temporal_accumulation.html)
 
 
 ## Antialiasing Filters
@@ -84,7 +95,7 @@
 | Sharpen Filter | "sharpness" | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/sharpen.html) |
 
 
-## Other Filters {#other}
+## Other Filters
 
 | Filter | filter name<br>in rif-cmd | Document Link |
 | :--    | :--:                      | :--:          |
