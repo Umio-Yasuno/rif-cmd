@@ -23,7 +23,6 @@ int main(int argc, char *argv[]) {
    const rif_char *output_path = "out.png";
 
    for (i=1; i < argc; i++) {
-      printf("%s: ", argv[i]);
       if (!strcmp("-i", argv[i])) {
          if (i + 1 < argc) {
             i++;
@@ -89,6 +88,7 @@ int main(int argc, char *argv[]) {
    status = rifContextCreateImage(context, &desc, nullptr, &outputImage);
       if (status != RIF_SUCCESS) return -1;
 
+   printf("\n");
 // Create image filter
 // Attach filter and set parameters
 if (filter_name) {
@@ -113,19 +113,53 @@ if (filter_name) {
                                           RIF_IMAGE_FILTER_ROTATE,
                                           &filter);
          if (status != RIF_SUCCESS) return -1;
-   // Blurring and Resampling Filters
-/*
-   not work with Polaris11(gfx803) + miopen v2.0.5
+
+// Blurring and Resampling Filters
    } else if (!strcmp("ai_upscale", filter_name)) {
    // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/ai_upscale.html
+   /*
+    *    not work with Polaris11(gfx803) + MIOpen v2.0.5
+    */
       status = rifContextCreateImageFilter(context,
                                           RIF_IMAGE_FILTER_AI_UPSCALE,
                                           &filter);
          if (status != RIF_SUCCESS) return -1;
 
-      rifImageFilterSetParameter1u(filter, "mode", RIF_AI_UPSCALE_MODE_FAST_2X);
-      rifImageFilterSetParameterString(filter, "modelPath", "./models");
-*/
+      if (!use_default) {
+         rif_uint ret_param;
+         rif_char ret_model_path[64];
+
+         printf("Select upscale mode : \n [0: Fast] \n [1: Good (Default)] \n [2: Best]\n");
+            scanf("%1u%*[^\n]", &ret_param);
+   
+         switch (ret_param) {
+            case 0:
+               rifImageFilterSetParameter1u(filter,
+                                            "mode",
+                                            RIF_AI_UPSCALE_MODE_FAST_2X);
+               break;
+            case 1:
+               rifImageFilterSetParameter1u(filter,
+                                            "mode",
+                                            RIF_AI_UPSCALE_MODE_GOOD_2X);
+               break;
+            case 2:
+               rifImageFilterSetParameter1u(filter,
+                                            "mode",
+                                            RIF_AI_UPSCALE_MODE_BEST_2X);
+               break;
+            deafult:
+               rifImageFilterSetParameter1u(filter,
+                                            "mode",
+                                            RIF_AI_UPSCALE_MODE_FAST_2X);
+               break;
+         }
+         
+         printf("Path to model files (Default: ./models) : ");
+            scanf("%63s%*[^\n]", ret_model_path);
+         
+         rifImageFilterSetParameterString(filter, "modelPath", ret_model_path);
+      }
 
    } else if (!strcmp("motion_blur", filter_name)) {
    // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/motion_blur.html
