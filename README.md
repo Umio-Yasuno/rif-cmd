@@ -22,6 +22,10 @@ FLAGS:
   -d, --default                 use default parameter
 ```
 
+## Filters
+
+[FILTERS.md](./FILTERS.md)
+
 ## Supported
 
   * Linux x86_64 (OpenCL)
@@ -41,4 +45,4 @@ FLAGS:
 ## RIF Document
 
  * [Radeon Image Filters — AMD Radeon ProRender](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/about.html)
- * [https://gpuopen.com/radeon-image-filtering-library/](https://gpuopen.com/radeon-image-filtering-library/)
+ * [Radeon™ Image Filtering Library - GPUOpen](https://gpuopen.com/radeon-image-filtering-library/)
