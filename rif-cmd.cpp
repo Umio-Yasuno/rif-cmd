@@ -202,7 +202,7 @@ if (filter_name) {
    
          for (i=0; i < 2; i++) {
             printf("%s", ret_param_desc[0][i]);
-               scanf("%3f%*[^\n]", &ret_param[i]);
+               scanf("%f%*[^\n]", &ret_param[i]);
             rifImageFilterSetParameter1f(filter, ret_param_name[0][i], ret_param[i]);
          }
    
@@ -222,7 +222,7 @@ if (filter_name) {
          rif_float ret_param;
    
          printf("Gamma correction coefficient [Default: 2.2] [0, 5] : ");
-            scanf("%1f%*[^\n]", &ret_param);
+            scanf("%f%*[^\n]", &ret_param);
    
          rifImageFilterSetParameter1f(filter, "gamma", ret_param);
       }
@@ -291,7 +291,7 @@ if (filter_name) {
    
          for (i=0; i < 3; i++) {
             printf("%s", ret_param_desc[0][i]);
-               scanf("%2f%*[^\n]", &ret_param[i]);
+               scanf("%f%*[^\n]", &ret_param[i]);
    
             rifImageFilterSetParameter1f(filter, ret_param_name[0][i], ret_param[i]);
          }
@@ -316,7 +316,7 @@ if (filter_name) {
    
          for (i=0; i < 3; i++) {
             printf("%s", ret_param_desc[0][i]);
-               scanf("%3f%*[^\n]", &ret_param[i]);
+               scanf("%f%*[^\n]", &ret_param[i]);
    
             rifImageFilterSetParameter1f(filter, ret_param_name[0][i], ret_param[i]);
          }
@@ -348,7 +348,7 @@ if (filter_name) {
    
          for (i=0; i < 9; i++) {
             printf("%s", ret_param_desc[0][i]);
-               scanf("%2f%*[^\n]", &ret_param[0]);
+               scanf("%f%*[^\n]", &ret_param[0]);
    
             rifImageFilterSetParameter1f(filter, ret_param_name[0][i], ret_param[i]);
          }
@@ -366,7 +366,7 @@ if (filter_name) {
          rif_float ret_param;
    
          printf("Gamma [Default: 1] [0, 5] : ");
-            scanf("%1f%*[^\n]", &ret_param);
+            scanf("%f%*[^\n]", &ret_param);
    
          rifImageFilterSetParameter1f(filter, "gamma", ret_param);
       }
@@ -390,7 +390,7 @@ if (filter_name) {
    
          for (i=0; i < 3; i++ ) {
             printf("%s", ret_param_desc[0][i]);
-               scanf("%3f%*[^\n]", &ret_param[i]);
+               scanf("%f%*[^\n]", &ret_param[i]);
    
             rifImageFilterSetParameter1f(filter, ret_param_name[0][i], ret_param[i]);
          }
@@ -419,7 +419,7 @@ if (filter_name) {
    
          for (i=0; i < 4; i++) {
             printf("%s", ret_param_desc[0][i]);
-               scanf("%3f%*[^\n]", &ret_param[i]);
+               scanf("%f%*[^\n]", &ret_param[i]);
    
             rifImageFilterSetParameter1f(filter, ret_param_name[0][i], ret_param[3]);
          }
@@ -537,7 +537,7 @@ if (filter_name) {
    
          for (i=0; i < 4; i++) {
             printf("%s", ret_param_desc[0][i]);
-               scanf("%2f%*[^\n]", &ret_param[i]);
+               scanf("%f%*[^\n]", &ret_param[i]);
    
             rifImageFilterSetParameter1f(filter, ret_param_name[0][i], ret_param[i]);
          }
@@ -604,9 +604,9 @@ if (filter_name) {
    
          for (i=0; i < 4; i++) {
             printf("%s", ret_param_desc[0][i]);
-               scanf("%1f%*[^\n]", &ret_param[i]);
+               scanf("%f%*[^\n]", &ret_param[i]);
    
-            rifImageFilterSetParameter1f(filter, ret_param_desc[0][i],  ret_param[i]);
+            rifImageFilterSetParameter1f(filter, ret_param_name[0][i],  ret_param[i]);
          }
       }
 
