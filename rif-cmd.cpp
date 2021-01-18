@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
    int i;
    rif_bool    use_default = false;
 
-   const rif_char *input_path, *filter_name;
+   rif_char    input_path[64], filter_name[64];
 
    const rif_char *output_path = "out.png";
 
@@ -26,7 +26,9 @@ int main(int argc, char *argv[]) {
       if (!strcmp("-i", argv[i])) {
          if (i + 1 < argc) {
             i++;
-            input_path = argv[i];
+
+            if (strlen(argv[i]) < 64)
+               strncpy(input_path, argv[i], 63);
          } else {
             printf("Error: Please input image path\n");
             return -1;
@@ -34,12 +36,15 @@ int main(int argc, char *argv[]) {
       } else if (!strcmp("-o", argv[i])) {
          if (i + 1 < argc) {
             i++;
+
             output_path = argv[i];
          }
       } else if (!strcmp("-f", argv[i]) || !strcmp("--filter", argv[i])) {
          if (i + 1 < argc) {
             i++;
-            filter_name = argv[i];
+
+            if (strlen(argv[i]) < 64)
+               strncpy(filter_name, argv[i], 63);
          } else {
             printf("Error: Please filter name\n");
             return -1;
@@ -174,12 +179,10 @@ if (filter_name) {
    
          printf("Radius [Default: 5] [0, 50] : ");
             scanf("%2u%*[^\n]", &ret_radius);
-         // printf("radius: %u\n", ret_radius);
          rifImageFilterSetParameter1u(filter, "radius", ret_radius);
    
          printf("Motion direction [Default: (1, 1)] : ");
             scanf("%f, %f%*[^\n]", &ret_param[0], &ret_param[1]);
-         // printf("%f, %f\n", ret_param[0], ret_param[1]);
          rifImageFilterSetParameter2f(filter, "direction", ret_param[0], ret_param[1]);
       }
 
@@ -195,15 +198,15 @@ if (filter_name) {
          rif_float ret_param[2];
          rif_bool  ret_apply;
    
-         const rif_char *ret_param_desc[][2] =
+         const rif_char *ret_param_desc[2] =
                {  "Input image pre-exposure coefficient [Default: 0] [0, 100] : " ,
                   "Input image pre-contrast coefficient [Default: 1] [0, 10] : "  };
-         const rif_char *ret_param_name[][2] = { "exposure", "contrast" };
+         const rif_char *ret_param_name[2] = { "exposure", "contrast" };
    
          for (i=0; i < 2; i++) {
-            printf("%s", ret_param_desc[0][i]);
+            printf("%s", ret_param_desc[i]);
                scanf("%f%*[^\n]", &ret_param[i]);
-            rifImageFilterSetParameter1f(filter, ret_param_name[0][i], ret_param[i]);
+            rifImageFilterSetParameter1f(filter, ret_param_name[i], ret_param[i]);
          }
    
          printf("Apply ToneMap ? [Default: false] [0 (false), 1 (true)] : ");
@@ -235,37 +238,37 @@ if (filter_name) {
 
       if (!use_default) {
          rif_uint ret_param[1];
-         const rif_char *ret_src[][2] = { "srcColorSpace", "dstColorSpace" };
-         const rif_char *ret_param_desc[][2] = { "input", "output" };
+         const rif_char *ret_src[2] = { "srcColorSpace", "dstColorSpace" };
+         const rif_char *ret_param_desc[2] = { "input", "output" };
    
          for (i=0; i < 2; i++) {
-            printf("\nSelect color space of the %s image : \n [0: sRGB]\n [1: Adobe RGB]\n [2: Rec2020]\n [3: DCIP3]\n ", ret_param_desc[0][i]);
+            printf("\nSelect color space of the %s image : \n [0: sRGB]\n [1: Adobe RGB]\n [2: Rec2020]\n [3: DCIP3]\n ", ret_param_desc[i]);
                scanf("%u", &ret_param[i]);
    
             switch (ret_param[i]) {
                case 0:
                   rifImageFilterSetParameter1u(filter,
-                                               ret_src[0][i],
+                                               ret_src[i],
                                                RIF_COLOR_SPACE_SRGB);
                   break;
                case 1:
                   rifImageFilterSetParameter1u(filter,
-                                               ret_src[0][i],
+                                               ret_src[i],
                                                RIF_COLOR_SPACE_ADOBE_RGB);
                   break;
                case 2:
                   rifImageFilterSetParameter1u(filter,
-                                               ret_src[0][i],
+                                               ret_src[i],
                                                RIF_COLOR_SPACE_REC2020);
                   break;
                case 3:
                   rifImageFilterSetParameter1u(filter,
-                                               ret_src[0][i],
+                                               ret_src[i],
                                                RIF_COLOR_SPACE_DCIP3);
                   break;
                default:
                   rifImageFilterSetParameter1u(filter,
-                                               ret_src[0][i],
+                                               ret_src[i],
                                                RIF_COLOR_SPACE_SRGB);
                   break;
             }
@@ -282,18 +285,18 @@ if (filter_name) {
       if (!use_default) {
          rif_float ret_param[3];
    
-         const rif_char *ret_param_desc[][3] =
+         const rif_char *ret_param_desc[3] =
                            {  "Bias [Default: 1] : "                             ,
                               "Average input image luminance [Default: 0] : "    ,
                               "Maximum input image luminance [Default: 0.1] : "  };
-         const rif_char *ret_param_name[][3] =
+         const rif_char *ret_param_name[3] =
                            { "bias", "avLum", "maxLum" };
    
          for (i=0; i < 3; i++) {
-            printf("%s", ret_param_desc[0][i]);
+            printf("%s", ret_param_desc[i]);
                scanf("%f%*[^\n]", &ret_param[i]);
    
-            rifImageFilterSetParameter1f(filter, ret_param_name[0][i], ret_param[i]);
+            rifImageFilterSetParameter1f(filter, ret_param_name[i], ret_param[i]);
          }
       }
 
@@ -307,18 +310,18 @@ if (filter_name) {
       if (!use_default) {
          rif_float ret_param[3];
    
-         const rif_char *ret_param_desc[][3] =
+         const rif_char *ret_param_desc[3] =
                   {  "Gamma correction coefficient [Default: 2.2] [0, 5] : "           ,
                      "Input image pre-exposure coefficient [Default: 0] [-10, 10] : "  ,
                      "Output image pre-exposure coefficient [Default: 1] [0, 100] : "  };
-         const rif_char *ret_param_name[][3] =
+         const rif_char *ret_param_name[3] =
                   { "gamma", "exposure", "intensity" };
    
          for (i=0; i < 3; i++) {
-            printf("%s", ret_param_desc[0][i]);
+            printf("%s", ret_param_desc[i]);
                scanf("%f%*[^\n]", &ret_param[i]);
    
-            rifImageFilterSetParameter1f(filter, ret_param_name[0][i], ret_param[i]);
+            rifImageFilterSetParameter1f(filter, ret_param_name[i], ret_param[i]);
          }
       }
 
@@ -332,7 +335,7 @@ if (filter_name) {
       if (!use_default) {
          rif_float ret_param[9];
    
-         const rif_char *ret_param_desc[][9] =
+         const rif_char *ret_param_desc[9] =
                {  "Shoulder strength [Default: 0.15] [0, 5] : "                  ,
                   "Linear strength [Default: 0.5] [0, 1] : "                     ,
                   "Linear angle [Default: 0.5] [0, 1] : "                        ,
@@ -343,14 +346,14 @@ if (filter_name) {
                   "Input image exposure coefficient [Default: 1] [-10, 10] : "   ,
                   "Gamma correction coefficient [Default: 2.2] [0, 5] : "        };
    
-         const rif_char *ret_param_name[][9] = { "A", "B", "C", "D", "E", "F", "W",
+         const rif_char *ret_param_name[9] = { "A", "B", "C", "D", "E", "F", "W",
                                                  "exposure", "gamma" };
    
          for (i=0; i < 9; i++) {
-            printf("%s", ret_param_desc[0][i]);
-               scanf("%f%*[^\n]", &ret_param[0]);
+            printf("%s", ret_param_desc[i]);
+               scanf("%f%*[^\n]", &ret_param[i]);
    
-            rifImageFilterSetParameter1f(filter, ret_param_name[0][i], ret_param[i]);
+            rifImageFilterSetParameter1f(filter, ret_param_name[i], ret_param[i]);
          }
       }
 
@@ -381,18 +384,18 @@ if (filter_name) {
       if (!use_default) {
          rif_float ret_param[3];
    
-         const rif_char *ret_param_desc[][3] =
+         const rif_char *ret_param_desc[3] =
                   {  "Saturation [Default: 1] : "              ,
                      "Hue [Default: 0] [-180, 180] : "         ,
                      "Brightness multiplier [Default: 1] : "   };
-         const rif_char *ret_param_name[][3] =
+         const rif_char *ret_param_name[3] =
                   {  "saturation", "hue", "value" };
    
          for (i=0; i < 3; i++ ) {
-            printf("%s", ret_param_desc[0][i]);
+            printf("%s", ret_param_desc[i]);
                scanf("%f%*[^\n]", &ret_param[i]);
    
-            rifImageFilterSetParameter1f(filter, ret_param_name[0][i], ret_param[i]);
+            rifImageFilterSetParameter1f(filter, ret_param_name[i], ret_param[i]);
          }
       }
 
@@ -406,22 +409,22 @@ if (filter_name) {
       if (!use_default) {
          rif_float ret_param[4];
    
-         const rif_char *ret_param_desc[][4] =
+         const rif_char *ret_param_desc[4] =
                            {  "Gamma correction [Default: 2.2] [0, 5] : "        ,
                               "Film exposure time [Default: 0.125] [0, 100] : "  ,
                               "Luminance of the scene [Default: 1] [0, 100] : "  ,
                               "Aperture f-number [Default: 1] [0, 100] : "       };
    
-         const rif_char *ret_param_name[][4] = {   "gamma"        ,
+         const rif_char *ret_param_name[4] = {   "gamma"        ,
                                                    "exposureTime" ,
                                                    "sensitivity"  ,
                                                    "fstop"        };
    
          for (i=0; i < 4; i++) {
-            printf("%s", ret_param_desc[0][i]);
+            printf("%s", ret_param_desc[i]);
                scanf("%f%*[^\n]", &ret_param[i]);
    
-            rifImageFilterSetParameter1f(filter, ret_param_name[0][i], ret_param[3]);
+            rifImageFilterSetParameter1f(filter, ret_param_name[i], ret_param[i]);
          }
       }
 
@@ -447,18 +450,6 @@ if (filter_name) {
                                           RIF_IMAGE_FILTER_MAXWHITE_TONEMAP,
                                           &filter);
          if (status != RIF_SUCCESS) return -1;
-/*
-   } else if (!strcmp("depth_of_filed", filter_name)) {
-      float ret_param[4];
-      printf("Please sharpness parameter [Default: 0.5] : ");
-      scanf("%f", &ret_param);
-
-      status = rifContextCreateImageFilter(context,
-                                          RIF_IMAGE_FILTER_SHARPEN,
-                                          &filter);
-         if (status != RIF_SUCCESS) return -1;
-      rifImageFilterSetParameter1f(filter, "sharpness", ret_param);   
-*/
 
    } else if (!strcmp("photo_tonemap", filter_name)) {
    // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/photographic_tone_mapper.html
@@ -474,7 +465,7 @@ if (filter_name) {
          rif_uint    ret_apply[2];
    
    
-         const rif_char *ret_param_desc[][9] =
+         const rif_char *ret_param_desc[9] =
                            {  "Gamma correction [Default: 1] [0, 5] : "             ,
                               "Film exposure time [Default: 0.125] [0, 100] : "     ,
                               "Luminance of the scene [Default: 1] [0, 100] : "     ,
@@ -484,16 +475,16 @@ if (filter_name) {
                               "Saturation [Default: 0.5] [0, 1] : "                 ,
                               "Highlight [Default: 0.5] [0, 10] : "                 ,
                               "Shadow [Default: 0.5] [0, 10] : "                    };
-         const rif_char *ret_param_name[][9] =
+         const rif_char *ret_param_name[9] =
                            {  "gamma",      "exposureTime", "sensitivity"  ,
                               "fstop",      "focalL",       "vignette"     ,
                               "saturation", "lighten",      "darken"       };
    
          for (i=0; i < 9; i++) {
-            printf("%s", ret_param_desc[0][i]);
+            printf("%s", ret_param_desc[i]);
                scanf("%f%*[^\n]", &ret_param[i]);
    
-            rifImageFilterSetParameter1f(filter, ret_param_name[0][i],  ret_param[i]);
+            rifImageFilterSetParameter1f(filter, ret_param_name[i],  ret_param[i]);
          }
    
          printf("Do negative values clamp to zero? [Default: true] [0 (false), 1 (true)] : ");
@@ -513,6 +504,7 @@ if (filter_name) {
             scanf("%5u%*[^\n]", &ret_iso);
          printf("Use ISO? [Default: 0 (false)] [0 (false), 1 (true)] : ");
             scanf("%1u%*[^\n]", &ret_apply[1]);
+
          rifImageFilterSetParameter1u(filter, "ISO",     ret_iso);
          rifImageFilterSetParameter1u(filter, "useISO",  ret_apply[1]);
       }
@@ -527,22 +519,21 @@ if (filter_name) {
       if (!use_default) {
          rif_float ret_param[4];
    
-         const rif_char *ret_param_desc[][4] =
+         const rif_char *ret_param_desc[4] =
                   {  "Gamma correction [Default: 2.2] [0, 5] : "                 ,
                      "Controls the amount of light in the scene before tone mapping is applied  [Default: 1] [0, 10] : "   ,
                      "Controls the amount of light in the scene after tone mapping is applied  [Default: 1.2] [0, 10] : "  ,
                      "Please brightness parameter [Default: 0.375] [0, 10] : "   };
-         const rif_char *ret_param_name[][4] =
+         const rif_char *ret_param_name[4] =
                   { "gamma", "preScale", "postScale", "burn" };
    
          for (i=0; i < 4; i++) {
-            printf("%s", ret_param_desc[0][i]);
+            printf("%s", ret_param_desc[i]);
                scanf("%f%*[^\n]", &ret_param[i]);
    
-            rifImageFilterSetParameter1f(filter, ret_param_name[0][i], ret_param[i]);
+            rifImageFilterSetParameter1f(filter, ret_param_name[i], ret_param[i]);
          }
       }
-
    /*
    } else if (!strcmp("ai_denoiser", filter_name)) {
    // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/ai_denoiser.html
@@ -593,20 +584,20 @@ if (filter_name) {
 
       if (!use_default) {
          rif_float ret_param[4];
-         const rif_char *ret_param_desc[][4] =
+         const rif_char *ret_param_desc[4] =
                               {  "Radius [Default: 0.1] [0.01, 1] : "               ,
                                  "Threshold [Default: 0] : "                        ,
                                  "Weight [Default: 0.1] : "                         ,
                                  "Light intensity decay [Default: 1 (no decay)] : " };
-         const rif_char *ret_param_name[][4] =
+         const rif_char *ret_param_name[4] =
                               { "radius", "threshold", "weight", "decay" };
    
    
          for (i=0; i < 4; i++) {
-            printf("%s", ret_param_desc[0][i]);
+            printf("%s", ret_param_desc[i]);
                scanf("%f%*[^\n]", &ret_param[i]);
    
-            rifImageFilterSetParameter1f(filter, ret_param_name[0][i],  ret_param[i]);
+            rifImageFilterSetParameter1f(filter, ret_param_name[i],  ret_param[i]);
          }
       }
 
