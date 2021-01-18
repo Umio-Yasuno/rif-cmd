@@ -17,9 +17,7 @@
 int main(int argc, char *argv[]) {
    int i;
    rif_bool    use_default = false;
-
    rif_char    input_path[64], filter_name[64];
-
    const rif_char *output_path = "out.png";
 
    for (i=1; i < argc; i++) {
@@ -27,8 +25,19 @@ int main(int argc, char *argv[]) {
          if (i + 1 < argc) {
             i++;
 
-            if (strlen(argv[i]) < 64)
+            if (strlen(argv[i]) < 64) {
                strncpy(input_path, argv[i], 63);
+            } else {
+               return -1;
+            }
+
+            const char *input_ext = strrchr(input_path, '.');
+
+            if (input_ext && 
+                  (!strcmp(input_ext, ".jpg") || !strcmp(input_ext, ".jpeg"))
+               ) {
+               printf("\n[rif-cmd] Current version may output a broken image.\n\n");
+            }
          } else {
             printf("Error: Please input image path\n");
             return -1;
@@ -172,6 +181,13 @@ if (filter_name) {
                                           RIF_IMAGE_FILTER_MOTION_BLUR,
                                           &filter);
          if (status != RIF_SUCCESS) return -1;
+
+      /*
+         RIF 1.6.2 workaround
+         https://github.com/GPUOpen-LibrariesAndSDKs/RadeonImageFilter/issues/8
+      */
+         rifImageFilterSetParameter1u(filter, "radius", 4u);
+         rifImageFilterSetParameter1u(filter, "radius", 5u);
 
       if (!use_default) {
          rif_uint    ret_radius;
