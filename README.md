@@ -18,6 +18,8 @@ OPTIONS:
   -i <path>                       input image path
   -o <path>                      output image path
   -f, --filter <name>            filter name
+  -q <value>[0, 100]             JPEG quality
+
 FLAGS:
   -d, --default                 use default parameter
 ```

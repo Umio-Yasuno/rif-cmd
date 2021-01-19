@@ -89,6 +89,42 @@ int main(int argc, char *argv[]) {
       if (status != RIF_SUCCESS || !queue) return -1;
 
 // Create input and output images
+
+/*
+   rif_image_desc input_desc;
+   memset(&input_desc, 0, sizeof(input_desc));
+
+   rif_int width, height, num_comp;
+   rif_float *data = nullptr;
+   rif_uchar *raw_data = stbi_load(input_path, &width, &height, &num_comp, 3);
+
+   int array_size  = width * height * num_comp;
+   data = (rif_float*) malloc(array_size * sizeof(rif_float) + 1);
+
+   for (i=0; i < array_size; i++) {
+//      printf("%f", (rif_float)raw_data[i]);
+      data[i] = (rif_float)raw_data[i];
+   }
+      return -1;
+
+   printf("w: %d, h: %d, comp: %d\n", width, height, num_comp);
+//      return -1;
+
+//   int debug = malloc_usable_size(data);
+//   printf("data: %d\n\n", debug);
+//      return -1;
+
+   input_desc.image_width        =  width;
+   input_desc.image_height       =  height;
+   input_desc.num_components     =  num_comp;
+   input_desc.type               =  RIF_COMPONENT_TYPE_FLOAT32;
+   
+   rifContextCreateImage(context, &input_desc, data, &inputImage);
+      free(data);
+      data = nullptr;
+
+*/
+
    inputImage = ImageTools::LoadImage(input_path, context);
       if (!inputImage) {
          printf("Error: 404 image\n");
@@ -99,7 +135,10 @@ int main(int argc, char *argv[]) {
    size_t            retSize;
 
    rifImageGetInfo(inputImage, RIF_IMAGE_DESC, sizeof(output_desc), &output_desc, &retSize);
+
+   if (!strcmp(".jpg", input_ext) || !strcmp(".jpeg", input_ext)) {
       output_desc.type = RIF_COMPONENT_TYPE_UINT8;
+   }
    status = rifContextCreateImage(context, &output_desc, nullptr, &outputImage);
       if (status != RIF_SUCCESS) return -1;
 
@@ -755,13 +794,16 @@ if (filter_name) {
       if (status != RIF_SUCCESS) return -1;
 
 if (!strcmp(".jpg", input_ext) || !strcmp(".jpeg", input_ext)) {
-
-   stbi_write_jpg(output_path,
-                  output_desc.image_width, output_desc.image_height,
-                  output_desc.num_components, output_data,
-                  quality);
-
-//   status = rifImageUnmap(outputImage, &output_data);
+/*
+ *     int stbi_write_jpg(char const *filename,
+ *                        int w, int h,
+ *                        int comp,
+ *                        const void *data, int quality);
+ */
+   status = stbi_write_jpg(output_path,
+                           output_desc.image_width, output_desc.image_height,
+                           output_desc.num_components,
+                           output_data, quality);
 
 } else if (!strcmp(".png", input_ext)) {
 /*
@@ -776,15 +818,23 @@ if (!strcmp(".jpg", input_ext) || !strcmp(".jpeg", input_ext)) {
 /*
  *    int stbi_write_png(char const *filename,
  *                       int w, int h,
- *                       int comp, const void  *data,
- *                       int stride_in_bytes)
+ *                       int comp,
+ *                       const void  *data, int stride_in_bytes)
  */
-   stbi_write_png(output_path,
-                  output_desc.image_width, output_desc.image_height,
-                  output_desc.num_components, output_data,
-                  0);
-
+   status = stbi_write_png(output_path,
+                           output_desc.image_width, output_desc.image_height,
+                           output_desc.num_components,
+                           output_data, 0);
 }
+
+   if (status) {
+      printf("\nSuccess: %s\n", realpath(output_path, NULL));
+   } else {
+      printf("\nError: output image\n");
+      return -1;
+   }
+   status = rifImageUnmap(outputImage, &output_data);
+      if (status != RIF_SUCCESS) return -1;
    
 // Free resources
    rifCommandQueueDetachImageFilter(queue, filter);
