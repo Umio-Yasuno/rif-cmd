@@ -1,4 +1,5 @@
 #include "RadeonImageFilter/include/RadeonImageFilters.h"
+#include "RadeonImageFilter/include/RadeonImageFilters_version.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "RadeonImageFilter/samples/ImageTools/stb_image.h"
@@ -9,46 +10,52 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <malloc.h>
+// #include <malloc.h>
 
 // g++ rif-cmd.cpp -L./RadeonImageFilter/Ubuntu18/Dynamic/ -L./RadeonImageFilter/Ubuntu18/Static/ -lRadeonImageFilters -o rif-cmd
 
 int main(int argc, char *argv[]) {
    int i, quality = 90;
    rif_bool    use_default = false;
-   rif_char    input_path[64], filter_name[64];
+   const rif_char *input_path, *filter_name, *input_ext, *output_ext;
+   FILE *file_check;
+
    const rif_char *output_path = "out.png";
-   const rif_char *input_ext;
 
    for (i=1; i < argc; i++) {
       if (!strcmp("-i", argv[i])) {
          if (i + 1 < argc) {
             i++;
 
-            if (strlen(argv[i]) < 64) {
-               strncpy(input_path, argv[i], 63);
+            file_check  = fopen(argv[i], "r");
+
+            if (file_check) {
+               input_path  = argv[i];
+               input_ext   = strrchr(input_path, '.');
             } else {
+               printf("Error: \"%s\" not found\n", argv[i]);
                return -1;
             }
-
-            input_ext = strrchr(input_path, '.');
 
          } else {
             printf("Error: Please input image path\n");
             return -1;
          }
+
       } else if (!strcmp("-o", argv[i])) {
          if (i + 1 < argc) {
             i++;
 
             output_path = argv[i];
+            output_ext  = strrchr(output_path, '.');
+         } else {
+            printf("Error: Please output image path\n");
+            return -1;
          }
       } else if (!strcmp("-f", argv[i]) || !strcmp("--filter", argv[i])) {
          if (i + 1 < argc) {
             i++;
-
-            if (strlen(argv[i]) < 64)
-               strncpy(filter_name, argv[i], 63);
+            filter_name = argv[i];
          } else {
             printf("Error: Please filter name\n");
             return -1;
@@ -56,6 +63,10 @@ int main(int argc, char *argv[]) {
       } else if (!strcmp("-d", argv[i]) || !strcmp("--default", argv[i])) {
          printf("use default value\n");
          use_default = true;
+      } else if (!strcmp("-v", argv[i]) || !strcmp("--version", argv[i])) {
+         printf("RIF API version: %s\n", RIF_API_VERSION_STRING);
+
+         return 0;
       } else if (!strcmp("-q", argv[i])) {
          if (i + 1 < argc) {
             i++;
@@ -110,10 +121,6 @@ int main(int argc, char *argv[]) {
    printf("w: %d, h: %d, comp: %d\n", width, height, num_comp);
 //      return -1;
 
-//   int debug = malloc_usable_size(data);
-//   printf("data: %d\n\n", debug);
-//      return -1;
-
    input_desc.image_width        =  width;
    input_desc.image_height       =  height;
    input_desc.num_components     =  num_comp;
@@ -136,9 +143,9 @@ int main(int argc, char *argv[]) {
 
    rifImageGetInfo(inputImage, RIF_IMAGE_DESC, sizeof(output_desc), &output_desc, &retSize);
 
-   if (!strcmp(".jpg", input_ext) || !strcmp(".jpeg", input_ext)) {
+   if (!strcmp(".jpg", input_ext) || !strcmp(".jpeg", input_ext))
       output_desc.type = RIF_COMPONENT_TYPE_UINT8;
-   }
+
    status = rifContextCreateImage(context, &output_desc, nullptr, &outputImage);
       if (status != RIF_SUCCESS) return -1;
 
@@ -171,17 +178,20 @@ if (filter_name) {
 // Blurring and Resampling Filters
    } else if (!strcmp("ai_upscale", filter_name)) {
    // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/ai_upscale.html
-   /*
-    *    not work with Polaris11(gfx803) + MIOpen v2.0.5
-    */
+      /*
+       *    not work with Polaris11(gfx803) + MIOpen v2.0.5
+       */
+
       status = rifContextCreateImageFilter(context,
-                                          RIF_IMAGE_FILTER_AI_UPSCALE,
-                                          &filter);
+                                           RIF_IMAGE_FILTER_AI_UPSCALE,
+                                           &filter);
          if (status != RIF_SUCCESS) return -1;
+
+      const rif_char *ret_model_path = "./RadeonImageFilter/models";
+      rifImageFilterSetParameterString(filter, "modelPath", ret_model_path);
 
       if (!use_default) {
          rif_uint ret_param;
-         rif_char ret_model_path[64];
 
          printf("Select upscale mode : \n [0: Fast] \n [1: Good (Default)] \n [2: Best]\n");
             scanf("%1u%*[^\n]", &ret_param);
@@ -209,7 +219,7 @@ if (filter_name) {
                break;
          }
          
-         printf("Path to model files (Default: ./models) : ");
+         printf("Path to model files (Default: ./RadeonImageFilter/models) : ");
             scanf("%63s%*[^\n]", ret_model_path);
          
          rifImageFilterSetParameterString(filter, "modelPath", ret_model_path);
@@ -793,7 +803,7 @@ if (filter_name) {
    status = rifImageMap(outputImage, RIF_IMAGE_MAP_READ, (void**)&output_data);
       if (status != RIF_SUCCESS) return -1;
 
-if (!strcmp(".jpg", input_ext) || !strcmp(".jpeg", input_ext)) {
+if (!strcmp(".jpg", output_ext) || !strcmp(".jpeg", output_ext)) {
 /*
  *     int stbi_write_jpg(char const *filename,
  *                        int w, int h,
@@ -805,7 +815,7 @@ if (!strcmp(".jpg", input_ext) || !strcmp(".jpeg", input_ext)) {
                            output_desc.num_components,
                            output_data, quality);
 
-} else if (!strcmp(".png", input_ext)) {
+} else if (!strcmp(".png", output_ext)) {
 /*
    status = ImageTools::SaveImage(outputImage, output_path);
       if (status) {
