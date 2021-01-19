@@ -1,8 +1,6 @@
 #include "RadeonImageFilter/include/RadeonImageFilters.h"
 
 #define STB_IMAGE_IMPLEMENTATION
-#define STBI_ONLY_JPEG
-#define STBI_ONLY_PNG
 #include "RadeonImageFilter/samples/ImageTools/stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "RadeonImageFilter/samples/ImageTools/stb_image_write.h"
@@ -11,14 +9,16 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <malloc.h>
 
 // g++ rif-cmd.cpp -L./RadeonImageFilter/Ubuntu18/Dynamic/ -L./RadeonImageFilter/Ubuntu18/Static/ -lRadeonImageFilters -o rif-cmd
 
 int main(int argc, char *argv[]) {
-   int i;
+   int i, quality = 90;
    rif_bool    use_default = false;
    rif_char    input_path[64], filter_name[64];
    const rif_char *output_path = "out.png";
+   const rif_char *input_ext;
 
    for (i=1; i < argc; i++) {
       if (!strcmp("-i", argv[i])) {
@@ -31,13 +31,8 @@ int main(int argc, char *argv[]) {
                return -1;
             }
 
-            const char *input_ext = strrchr(input_path, '.');
+            input_ext = strrchr(input_path, '.');
 
-            if (input_ext && 
-                  (!strcmp(input_ext, ".jpg") || !strcmp(input_ext, ".jpeg"))
-               ) {
-               printf("\n[rif-cmd] Current version may output a broken image.\n\n");
-            }
          } else {
             printf("Error: Please input image path\n");
             return -1;
@@ -61,6 +56,12 @@ int main(int argc, char *argv[]) {
       } else if (!strcmp("-d", argv[i]) || !strcmp("--default", argv[i])) {
          printf("use default value\n");
          use_default = true;
+      } else if (!strcmp("-q", argv[i])) {
+         if (i + 1 < argc) {
+            i++;
+
+            quality = atoi(argv[i]);
+         }
       } else {
          printf("Error: Unknown Option \"%s\"\n", argv[i]);
          return -1;
@@ -93,13 +94,13 @@ int main(int argc, char *argv[]) {
          printf("Error: 404 image\n");
          return -1;
       }
-   
 // Create output image
-   rif_image_desc desc;
-   size_t retSize;
+   rif_image_desc    output_desc;
+   size_t            retSize;
 
-   rifImageGetInfo(inputImage, RIF_IMAGE_DESC, sizeof(desc), &desc, &retSize);
-   status = rifContextCreateImage(context, &desc, nullptr, &outputImage);
+   rifImageGetInfo(inputImage, RIF_IMAGE_DESC, sizeof(output_desc), &output_desc, &retSize);
+      output_desc.type = RIF_COMPONENT_TYPE_UINT8;
+   status = rifContextCreateImage(context, &output_desc, nullptr, &outputImage);
       if (status != RIF_SUCCESS) return -1;
 
    printf("\n");
@@ -749,6 +750,21 @@ if (filter_name) {
    status = rifContextExecuteCommandQueue(context, queue, nullptr, nullptr, nullptr);
       if (status != RIF_SUCCESS) return -1;
 
+   rif_uchar *output_data;
+   status = rifImageMap(outputImage, RIF_IMAGE_MAP_READ, (void**)&output_data);
+      if (status != RIF_SUCCESS) return -1;
+
+if (!strcmp(".jpg", input_ext) || !strcmp(".jpeg", input_ext)) {
+
+   stbi_write_jpg(output_path,
+                  output_desc.image_width, output_desc.image_height,
+                  output_desc.num_components, output_data,
+                  quality);
+
+//   status = rifImageUnmap(outputImage, &output_data);
+
+} else if (!strcmp(".png", input_ext)) {
+/*
    status = ImageTools::SaveImage(outputImage, output_path);
       if (status) {
          printf("\nSuccess\n");
@@ -756,6 +772,19 @@ if (filter_name) {
          printf("\nError: output image\n");
          return -1;
       }
+*/
+/*
+ *    int stbi_write_png(char const *filename,
+ *                       int w, int h,
+ *                       int comp, const void  *data,
+ *                       int stride_in_bytes)
+ */
+   stbi_write_png(output_path,
+                  output_desc.image_width, output_desc.image_height,
+                  output_desc.num_components, output_data,
+                  0);
+
+}
    
 // Free resources
    rifCommandQueueDetachImageFilter(queue, filter);
