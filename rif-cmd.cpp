@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
 
             quality = atoi(argv[i]);
          } else {
-            printf("Erroe: Please quality value\n");
+            printf("Error: Please quality value\n");
             return -1;
          }
       } else {
