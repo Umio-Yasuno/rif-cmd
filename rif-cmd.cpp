@@ -248,7 +248,7 @@ if (filter_name) {
       if (!use_default) {
          rif_uint ret_operator;
 
-         printf("Interpolation operator : \n\n"
+         printf("Interpolation operator : \n"
                 "[0]: Nearest,                     [1]: Bilinear\n"
                 "[2]: Bicubic,                     [3]: Lanczos\n"
                 );
@@ -288,7 +288,7 @@ if (filter_name) {
       if (!use_default) {
 //         rif_uint ret_operator, offset = 4;
 
-         printf("Interpolation operator : \n\n"
+         printf("Interpolation operator : \n"
                 "[0]: Lanczos4,                    [1]: Lanczos6\n"
                 "[2]: Lanczos12,                   [3]: Lanczos3\n"
                 "[4]: Kaiser,                      [5]: Blackman\n"
@@ -673,6 +673,22 @@ if (filter_name) {
    } else if (!strcmp("ai_denoiser", filter_name)) {
    // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/ai_denoiser.html
    */
+   } else if (!strcmp("median_denoise", filter_name)) {
+   // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/median_denoiser.html
+      status = rifContextCreateImageFilter(context,
+                                          RIF_IMAGE_FILTER_MEDIAN_DENOISE,
+                                          &filter);
+         if (status != RIF_SUCCESS) return -1;
+ 
+      if (!use_default) {
+         rif_uint ret_param;
+
+         printf("Radius of the filter window [Default: 1] [0, 50]\n");
+            scanf("%u%*[^\n]", &ret_param);
+
+         rifImageFilterSetParameter1u(filter, "radius", ret_param);
+      }
+
    } else if (!strcmp("laplace_edge_detect", filter_name) || !strcmp("laplace", filter_name)) {
    // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/laplace_edge_detection.html
       status = rifContextCreateImageFilter(context,
