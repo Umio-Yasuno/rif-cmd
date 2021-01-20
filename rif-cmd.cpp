@@ -251,14 +251,6 @@ if (filter_name) {
          printf("Interpolation operator : \n\n"
                 "[0]: Nearest,                     [1]: Bilinear\n"
                 "[2]: Bicubic,                     [3]: Lanczos\n"
-                "[4]: Lanczos4,                    [5]: Lanczos6\n"
-                "[6]: Lanczos12,                   [7]: Lanczos3\n"
-                "[8]: Kaiser,                      [9]: Blackman\n"
-                "[10]: Gauss,                      [11]: Box\n"
-                "[12]: Tent,                       [13]: Bell\n"
-                "[14]: B-spline,                   [15]: Quadratic Interpolation\n"
-                "[16]: Quadratic approximation,    [17]: Quadratic mix\n"
-                "[18]: Mitchell,                   [19]: Catmull\n"
                 );
             scanf("%u%*[^\n]", &ret_operator);
 
@@ -268,17 +260,67 @@ if (filter_name) {
             scanf("%f%*[^\n]", &ret_scale);
       }
 
-         output_desc.image_width  = output_desc.image_width * ret_scale;
-         output_desc.image_height = output_desc.image_height * ret_scale;
-
-         rifImageFilterSetParameter2u(filter, "outSize",
-                                      output_desc.image_width,
-                                      output_desc.image_height);
+      output_desc.image_width  = (rif_uint)(output_desc.image_width  * ret_scale);
+      output_desc.image_height = (rif_uint)(output_desc.image_height * ret_scale);
 
       status = rifContextCreateImage(context, &output_desc, nullptr, &outputImage);
          if (status != RIF_SUCCESS) return -1;
 
+      rifImageFilterSetParameter2u(filter, "outSize",
+                                    output_desc.image_width,
+                                    output_desc.image_height);
+
+
+   } else if (!strcmp("dynamic_resample", filter_name)) {
+   // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/resampling.html
+   // https://github.com/GPUOpen-LibrariesAndSDKs/RadeonImageFilter/blob/master/include/RadeonImageFilters.h#L237
+      status = rifContextCreateImageFilter(context,
+                                          RIF_IMAGE_FILTER_RESAMPLE_DYNAMIC,
+                                          &filter);
+         if (status != RIF_SUCCESS) return -1;
       
+         rif_float   ret_sharp = 1.0,  ret_scale = 2.0;
+         rif_uint    ret_operator = 0, offset = 4;
+
+//         rifImageFilterSetParameter1u(filter, "interpOperator", RIF_IMAGE_INTERPOLATION_LANCZOS4);
+//         rifImageFilterSetParameter1f(filter, "sharpness", ret_sharp);
+
+      if (!use_default) {
+//         rif_uint ret_operator, offset = 4;
+
+         printf("Interpolation operator : \n\n"
+                "[0]: Lanczos4,                    [1]: Lanczos6\n"
+                "[2]: Lanczos12,                   [3]: Lanczos3\n"
+                "[4]: Kaiser,                      [5]: Blackman\n"
+                "[6]: Gauss,                       [7]: Box\n"
+                "[8]: Tent,                        [9]: Bell\n"
+                "[10]: B-spline,                   [11]: Quadratic Interpolation\n"
+                "[12]: Quadratic approximation,    [13]: Quadratic mix\n"
+                "[14]: Mitchell,                   [15]: Catmull\n"
+                );
+            scanf("%u%*[^\n]", &ret_operator);
+
+         rifImageFilterSetParameter1u(filter, "interpOperator", ret_operator + offset);
+
+         printf("Scale {n}x [Default: 2] : ");
+            scanf("%f%*[^\n]", &ret_scale);
+
+         printf("Sharpness [Default: 1] [0.2, 5] : ");
+            scanf("%f%*[^\n]", &ret_sharp);
+
+         rifImageFilterSetParameter1f(filter, "sharpness", ret_sharp);
+      }
+
+      output_desc.image_width  = (rif_uint)(output_desc.image_width  * ret_scale);
+      output_desc.image_height = (rif_uint)(output_desc.image_height * ret_scale);
+
+      status = rifContextCreateImage(context, &output_desc, nullptr, &outputImage);
+         if (status != RIF_SUCCESS) return -1;
+
+      rifImageFilterSetParameter2u(filter, "outSize",
+                                   output_desc.image_width,
+                                   output_desc.image_height);
+
 // Tone Mapping and Color Changing Filters
    } else if (!strcmp("filmic_tonemap", filter_name)) {
    // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/aces_filmic_tone_mapping.html
