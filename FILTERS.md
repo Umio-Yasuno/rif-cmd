@@ -27,7 +27,7 @@
 | Filter | filter name<br>in rif-cmd | Document Link |
 | :--    |  :--:                     | :--:          |
 | AI Upscale Filter         | "ai_upscale" | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/ai_upscale.html) |
-| Depth of Field Filter     | not yet implemented <!-- depth_of_filed --> | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/depth_of_field.html) |
+| Depth of Field Filter     | *not yet implemented* <!-- depth_of_filed --> | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/depth_of_field.html) |
 | Gaussian Blurring Filter  | gaussian_blur | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/gaussian_blurring.html) |
 | Motion Blur Filter        | "motion_blur" | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/motion_blur.html) |
 | Resampling Filter         | "resample"    | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/resampling.html) |
@@ -57,19 +57,19 @@
 
 | Filter | filter name<br>in rif-cmd | Document Link |
 | :--    | :--:                      | :--:          |
-| AI Denoiser Filter                    | not yet implemented <!-- ai_denoise -->           | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/ai_denoiser.html) |
-| Bilateral Denoiser Filter             | not yet implemented <!-- bilateral_denoise -->    | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/bilateral_denoiser.html) |
-| Edge-avoiding À-Trous Wavelet Filter  | not yet implemented <!-- eaw_denoise -->          | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/edge_avoiding_wavelet.html) |
-| Local Weighted Regression Filter      | not yet implemented <!-- eaw_denoise -->          | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/local_weighted_regression.html) |
+| AI Denoiser Filter                    | *not yet implemented* <!-- ai_denoise -->           | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/ai_denoiser.html) |
+| Bilateral Denoiser Filter             | *not yet implemented* <!-- bilateral_denoise -->    | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/bilateral_denoiser.html) |
+| Edge-avoiding À-Trous Wavelet Filter  | *not yet implemented* <!-- eaw_denoise -->          | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/edge_avoiding_wavelet.html) |
+| Local Weighted Regression Filter      | *not yet implemented* <!-- eaw_denoise -->          | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/local_weighted_regression.html) |
 | Median Denoiser Filter               | median_denoise | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/median_denoiser.html) |
-| Temporal Accumulation Filter         | not yet implemented <!-- median_denoise -->       | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/temporal_accumulation.html)
+| Temporal Accumulation Filter         | *not yet implemented* <!-- median_denoise -->       | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/temporal_accumulation.html)
 
 
 ## Antialiasing Filters
 
 | Filter | filter name<br>in rif-cmd | Document Link |
 | :--    | :--:                      | :--:          |
-| Morphological Antialiasing Filter | not yet implemented <!-- mlaa --> | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/morphological_antialiasing.html) |
+| Morphological Antialiasing Filter | *not yet implemented* <!-- mlaa --> | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/morphological_antialiasing.html) |
 
 
 ## Edge Detection
@@ -84,8 +84,8 @@
 
 | Filter | filter name<br>in rif-cmd | Document Link |
 | :--    | :--:                      | :--:          |
-| Multiplication Filter | not yet implemented <!-- mult -->         | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/multiplication.html) |
-| Weighted Sum Filter   | not yet implemented <!-- weighted_sum --> | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/weighted_sum.html) |
+| Multiplication Filter | *not yet implemented* <!-- mult -->         | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/multiplication.html) |
+| Weighted Sum Filter   | *not yet implemented* <!-- weighted_sum --> | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/weighted_sum.html) |
 
 
 ## Image Enhance Filters
@@ -99,17 +99,17 @@
 
 | Filter | filter name<br>in rif-cmd | Document Link |
 | :--    | :--:                      | :--:          |
-| AI Custom Model Filter            | not yet implemented <!-- ai_model --> | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/ai_custom_model.html) |
+| AI Custom Model Filter            | *not yet implemented* <!-- ai_model --> | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/ai_custom_model.html) |
 | BGRA TO RGBA Conversion Filter    | "bgra_to_rgba"                        | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/bgra_to_rgba_conversion.html) |
-| Binary Operation Filter           | not yet implemented <!-- binary_op -->| [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/binary_operation.html) |
+| Binary Operation Filter           | *not yet implemented* <!-- binary_op -->| [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/binary_operation.html) |
 | Bloom Filter                      | "bloom"                               | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/bloom.html) |
-| Convert Filter                    | not yet implemented <!-- convert -->  | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/convert.html) |
+| Convert Filter                    | *not yet implemented* <!-- convert -->  | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/convert.html) |
 | Dilate (Erode) Filter             | "dilate_erode"                        | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/dilate.html) |
 | Emboss Filter                     | "emboss"                              | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/emboss.html) |
-| Motion Buffer Filter              | not yet implemented <!-- motion_buffer --> | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/motion_buffer.html) |
-| NDC Depth Filter                  | not yet implemented <!-- ndc_depth -->| [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/ndc_depth.html) |
+| Motion Buffer Filter              | *not yet implemented* <!-- motion_buffer --> | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/motion_buffer.html) |
+| NDC Depth Filter                  | *not yet implemented* <!-- ndc_depth -->| [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/ndc_depth.html) |
 | Posterization Filter              | "posterize"                           | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/posterization.html) |
 | Range Remap Filter                | range_remapa                          | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/range_remap.html) |
 | RGB Noise Filter                  | "rgb_noise"                           | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/rgb_noise.html) |
 | Spread Filter                     | "spread"                              | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/spread.html) |
-| User Defined Filter               | not yet implemented <!-- user_defined --> | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/user_defined.html) |
+| User Defined Filter               | *not yet implemented* <!-- user_defined --> | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/user_defined.html) |
