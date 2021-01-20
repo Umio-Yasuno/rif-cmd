@@ -9,6 +9,7 @@
 #include "RadeonImageFilter/samples/ImageTools/ImageTools.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 // #include <malloc.h>
 
@@ -77,6 +78,17 @@ int main(int argc, char *argv[]) {
             printf("Error: Please quality value\n");
             return -1;
          }
+      } else if (!strcmp("--trace", argv[i])) {
+         if (i + 1 < argc) {
+            i++;
+
+            setenv("RIF_TRACING_ENABLED", "1", 0);
+            setenv("RIF_TRACING_PATH", argv[i], 0);
+         } else {
+            printf("Error: Please path to output the tracing file\n");
+            return -1;
+         }
+
       } else {
          printf("Error: Unknown Option \"%s\"\n", argv[i]);
          return -1;
