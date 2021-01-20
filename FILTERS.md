@@ -31,7 +31,7 @@
 | Dynamic Resampling Filter | not yet implemented <!-- dynamic_resample --> | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/dynamic_resampling.html) |
 | Gaussian Blurring Filter  | not yet implemented <!-- gaussian_blur --> | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/gaussian_blurring.html) |
 | Motion Blur Filter        | "motion_blur" | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/motion_blur.html) |
-| Resampling Filter         |  not yet implemented <!-- gaussian_blur --> | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/resampling.html) |
+| Resampling Filter         | "resample"    | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/resampling.html) |
 
 
 ## Tone Mapping and Color Changing Filters

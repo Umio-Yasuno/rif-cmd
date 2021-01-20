@@ -15,7 +15,7 @@
 // g++ rif-cmd.cpp -L./RadeonImageFilter/Ubuntu18/Dynamic/ -L./RadeonImageFilter/Ubuntu18/Static/ -lRadeonImageFilters -o rif-cmd
 
 int main(int argc, char *argv[]) {
-   int i, quality = 90;
+   int i, quality = 0;
    rif_bool    use_default = false;
    const rif_char *input_path, *filter_name, *input_ext, *output_ext;
    FILE *file_check;
@@ -64,6 +64,7 @@ int main(int argc, char *argv[]) {
          printf("use default value\n");
          use_default = true;
       } else if (!strcmp("-v", argv[i]) || !strcmp("--version", argv[i])) {
+         printf("rif-cmd version: 0.0.0\n");
          printf("RIF API version: %s\n", RIF_API_VERSION_STRING);
 
          return 0;
@@ -72,6 +73,9 @@ int main(int argc, char *argv[]) {
             i++;
 
             quality = atoi(argv[i]);
+         } else {
+            printf("Erroe: Please quality value\n");
+            return -1;
          }
       } else {
          printf("Error: Unknown Option \"%s\"\n", argv[i]);
@@ -193,33 +197,13 @@ if (filter_name) {
       if (!use_default) {
          rif_uint ret_param;
 
-         printf("Select upscale mode : \n [0: Fast] \n [1: Good (Default)] \n [2: Best]\n");
+         printf("Select upscale mode : \n"
+                "[0: Fast] \n [1: Good (Default)] \n [2: Best]\n");
             scanf("%1u%*[^\n]", &ret_param);
    
-         switch (ret_param) {
-            case 0:
-               rifImageFilterSetParameter1u(filter,
-                                            "mode",
-                                            RIF_AI_UPSCALE_MODE_FAST_2X);
-               break;
-            case 1:
-               rifImageFilterSetParameter1u(filter,
-                                            "mode",
-                                            RIF_AI_UPSCALE_MODE_GOOD_2X);
-               break;
-            case 2:
-               rifImageFilterSetParameter1u(filter,
-                                            "mode",
-                                            RIF_AI_UPSCALE_MODE_BEST_2X);
-               break;
-            deafult:
-               rifImageFilterSetParameter1u(filter,
-                                            "mode",
-                                            RIF_AI_UPSCALE_MODE_FAST_2X);
-               break;
-         }
+            rifImageFilterSetParameter1u(filter, "mode", ret_param);
          
-         printf("Path to model files (Default: ./RadeonImageFilter/models) : ");
+         printf("Path to model files (Default: ./RadeonImageFilter/models) : \n");
             scanf("%63s%*[^\n]", ret_model_path);
          
          rifImageFilterSetParameterString(filter, "modelPath", ret_model_path);
@@ -252,6 +236,49 @@ if (filter_name) {
          rifImageFilterSetParameter2f(filter, "direction", ret_param[0], ret_param[1]);
       }
 
+   } else if (!strcmp("resample", filter_name)) {
+   // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/resampling.html
+      status = rifContextCreateImageFilter(context,
+                                          RIF_IMAGE_FILTER_RESAMPLE,
+                                          &filter);
+         if (status != RIF_SUCCESS) return -1;
+      
+         rif_float ret_scale = 2.0;
+
+      if (!use_default) {
+         rif_uint ret_operator;
+
+         printf("Interpolation operator : \n\n"
+                "[0]: Nearest,                     [1]: Bilinear\n"
+                "[2]: Bicubic,                     [3]: Lanczos\n"
+                "[4]: Lanczos4,                    [5]: Lanczos6\n"
+                "[6]: Lanczos12,                   [7]: Lanczos3\n"
+                "[8]: Kaiser,                      [9]: Blackman\n"
+                "[10]: Gauss,                      [11]: Box\n"
+                "[12]: Tent,                       [13]: Bell\n"
+                "[14]: B-spline,                   [15]: Quadratic Interpolation\n"
+                "[16]: Quadratic approximation,    [17]: Quadratic mix\n"
+                "[18]: Mitchell,                   [19]: Catmull\n"
+                );
+            scanf("%u%*[^\n]", &ret_operator);
+
+         rifImageFilterSetParameter1u(filter, "interpOperator", ret_operator);
+
+         printf("Scale {n}x [Default: 2] : ");
+            scanf("%f%*[^\n]", &ret_scale);
+      }
+
+         output_desc.image_width  = output_desc.image_width * ret_scale;
+         output_desc.image_height = output_desc.image_height * ret_scale;
+
+         rifImageFilterSetParameter2u(filter, "outSize",
+                                      output_desc.image_width,
+                                      output_desc.image_height);
+
+      status = rifContextCreateImage(context, &output_desc, nullptr, &outputImage);
+         if (status != RIF_SUCCESS) return -1;
+
+      
 // Tone Mapping and Color Changing Filters
    } else if (!strcmp("filmic_tonemap", filter_name)) {
    // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/aces_filmic_tone_mapping.html
@@ -843,7 +870,7 @@ if (!strcmp(".jpg", output_ext) || !strcmp(".jpeg", output_ext)) {
       printf("\nError: output image\n");
       return -1;
    }
-   status = rifImageUnmap(outputImage, &output_data);
+   status = rifImageUnmap(outputImage, output_data);
       if (status != RIF_SUCCESS) return -1;
    
 // Free resources
