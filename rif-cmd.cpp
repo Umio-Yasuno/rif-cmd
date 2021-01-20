@@ -209,6 +209,30 @@ if (filter_name) {
          rifImageFilterSetParameterString(filter, "modelPath", ret_model_path);
       }
 
+   } else if (!strcmp("gaussian_blur", filter_name)) {
+   // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/gaussian_blurring.html
+      status = rifContextCreateImageFilter(context,
+                                          RIF_IMAGE_FILTER_GAUSSIAN_BLUR,
+                                          &filter);
+         if (status != RIF_SUCCESS) return -1;
+
+      if (!use_default) {
+         rif_uint    ret_param[2];
+         rif_float   ret_sigma;
+
+         printf("The radius of the region that is used for blurring [Default: 1] [1, 50] : \n");
+            scanf("%u%*[^\n]", &ret_param[0]);
+         printf("Parameter of the decrease of the Gaussian function [Default: 1] : \n");
+            scanf("%f%*[^\n]", &ret_sigma);
+         printf("Enables use of local memory [Default: false] [0 (false), 1 (true)] : \n");
+            scanf("%u%*[^\n]", &ret_param[1]);
+
+         rifImageFilterSetParameter1u(filter, "radius",  ret_param[0]);
+         rifImageFilterSetParameter1u(filter, "tiling",  ret_param[1]);
+
+         rifImageFilterSetParameter1f(filter, "sigma",   ret_sigma);
+      }
+
    } else if (!strcmp("motion_blur", filter_name)) {
    // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/motion_blur.html
       status = rifContextCreateImageFilter(context,

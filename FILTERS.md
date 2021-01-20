@@ -28,10 +28,10 @@
 | :--    |  :--:                     | :--:          |
 | AI Upscale Filter         | "ai_upscale" | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/ai_upscale.html) |
 | Depth of Field Filter     | not yet implemented <!-- depth_of_filed --> | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/depth_of_field.html) |
-| Dynamic Resampling Filter | "dynamic_resample" | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/dynamic_resampling.html) |
-| Gaussian Blurring Filter  | not yet implemented <!-- gaussian_blur --> | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/gaussian_blurring.html) |
+| Gaussian Blurring Filter  | gaussian_blur | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/gaussian_blurring.html) |
 | Motion Blur Filter        | "motion_blur" | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/motion_blur.html) |
 | Resampling Filter         | "resample"    | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/resampling.html) |
+| Dynamic Resampling Filter | "dynamic_resample" | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/dynamic_resampling.html) |
 
 
 ## Tone Mapping and Color Changing Filters
