@@ -232,11 +232,11 @@ if (filter_name) {
          rif_uint    ret_param[2];
          rif_float   ret_sigma;
 
-         printf("The radius of the region that is used for blurring [Default: 1] [1, 50] : \n");
+         printf("The radius of the region that is used for blurring [Default: 1] [1, 50] : ");
             scanf("%u%*[^\n]", &ret_param[0]);
-         printf("Parameter of the decrease of the Gaussian function [Default: 1] : \n");
+         printf("Parameter of the decrease of the Gaussian function [Default: 1] : ");
             scanf("%f%*[^\n]", &ret_sigma);
-         printf("Enables use of local memory [Default: false] [0 (false), 1 (true)] : \n");
+         printf("Enables use of local memory [Default: false] [0 (false), 1 (true)] : ");
             scanf("%u%*[^\n]", &ret_param[1]);
 
          rifImageFilterSetParameter1u(filter, "radius",  ret_param[0]);
@@ -869,6 +869,38 @@ if (filter_name) {
          rifImageFilterSetParameter1u(filter, "levels", ret_param);
       }
    
+   } else if (!strcmp("range_remap", filter_name)) {
+   // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/range_remap.html
+      status = rifContextCreateImageFilter(context,
+                                          RIF_IMAGE_FILTER_REMAP_RANGE,
+                                          &filter);
+         if (status != RIF_SUCCESS) return -1;
+
+      if (!use_default) {
+         rif_uint    ret_auto;
+
+         printf("The input range is detected automatically [Default: true] [0 (false), 1 (true)] : ");
+            scanf("%u%*[^\n]", &ret_auto);
+         rifImageFilterSetParameter1u(filter, "srcRangeAuto", ret_auto);
+         
+         if (!ret_auto) {
+            rif_float ret_param[4];
+            const rif_char *ret_param_desc[] =
+                     {  "The minimum value of the input range [Default: 0] : "      ,
+                        "The maximum value of the input range [Default: 1] : "    ,
+                        "The minimum value of the output range [Default: 0] : "   ,
+                        "The maximum value of the output range [Default: 1] : "   };
+            const rif_char *ret_param_name[] =
+                     { "srcLo", "srcHi", "dstLo", "dstHi" };
+
+            for (i=0; i < 4; i++) {
+               printf("%s", ret_param_desc[i]);
+                  scanf("%f%*[^\n]", &ret_param[i]);
+               rifImageFilterSetParameter1f(filter, ret_param_name[i], ret_param[i]);
+            }
+         }
+      }
+
    } else if (!strcmp("rgb_noise", filter_name)) {
    // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/rgb_noise.html
       status = rifContextCreateImageFilter(context,

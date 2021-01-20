@@ -109,7 +109,7 @@
 | Motion Buffer Filter              | not yet implemented <!-- motion_buffer --> | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/motion_buffer.html) |
 | NDC Depth Filter                  | not yet implemented <!-- ndc_depth -->| [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/ndc_depth.html) |
 | Posterization Filter              | "posterize"                           | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/posterization.html) |
-| Range Remap Filter                | not yet implemented <!-- remap -->    | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/range_remap.html) |
+| Range Remap Filter                | range_remapa                          | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/range_remap.html) |
 | RGB Noise Filter                  | "rgb_noise"                           | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/rgb_noise.html) |
 | Spread Filter                     | "spread"                              | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/spread.html) |
 | User Defined Filter               | not yet implemented <!-- user_defined --> | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/user_defined.html) |
