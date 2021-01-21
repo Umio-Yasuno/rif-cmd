@@ -28,7 +28,7 @@
 | :--    |  :--:                     | :--:          |
 | AI Upscale Filter         | "ai_upscale" | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/ai_upscale.html) |
 | Depth of Field Filter     | *not yet implemented* <!-- depth_of_filed --> | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/depth_of_field.html) |
-| Gaussian Blurring Filter  | gaussian_blur | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/gaussian_blurring.html) |
+| Gaussian Blurring Filter  | "gaussian_blur" | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/gaussian_blurring.html) |
 | Motion Blur Filter        | "motion_blur" | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/motion_blur.html) |
 | Resampling Filter         | "resample"    | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/resampling.html) |
 | Dynamic Resampling Filter | "dynamic_resample" | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/dynamic_resampling.html) |
@@ -99,7 +99,7 @@
 
 | Filter | filter name<br>in rif-cmd | Document Link |
 | :--    | :--:                      | :--:          |
-| AI Custom Model Filter            | *not yet implemented* <!-- ai_model --> | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/ai_custom_model.html) |
+| AI Custom Model Filter            | "ai_custom"                           | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/ai_custom_model.html) |
 | BGRA TO RGBA Conversion Filter    | "bgra_to_rgba"                        | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/bgra_to_rgba_conversion.html) |
 | Binary Operation Filter           | *not yet implemented* <!-- binary_op -->| [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/binary_operation.html) |
 | Bloom Filter                      | "bloom"                               | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/bloom.html) |
@@ -109,7 +109,7 @@
 | Motion Buffer Filter              | *not yet implemented* <!-- motion_buffer --> | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/motion_buffer.html) |
 | NDC Depth Filter                  | *not yet implemented* <!-- ndc_depth -->| [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/ndc_depth.html) |
 | Posterization Filter              | "posterize"                           | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/posterization.html) |
-| Range Remap Filter                | range_remapa                          | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/range_remap.html) |
+| Range Remap Filter                | "range_remap"                         | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/range_remap.html) |
 | RGB Noise Filter                  | "rgb_noise"                           | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/rgb_noise.html) |
 | Spread Filter                     | "spread"                              | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/spread.html) |
 | User Defined Filter               | *not yet implemented* <!-- user_defined --> | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/user_defined.html) |

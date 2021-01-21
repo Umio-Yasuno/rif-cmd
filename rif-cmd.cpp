@@ -79,6 +79,7 @@ int main(int argc, char *argv[]) {
             return -1;
          }
       } else if (!strcmp("--trace", argv[i])) {
+      // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/tracing.html
          if (i + 1 < argc) {
             i++;
 
@@ -149,10 +150,7 @@ int main(int argc, char *argv[]) {
 */
 
    inputImage = ImageTools::LoadImage(input_path, context);
-      if (!inputImage) {
-         printf("Error: 404 image\n");
-         return -1;
-      }
+
 // Create output image
    rif_image_desc    output_desc;
    size_t            retSize;
@@ -165,7 +163,6 @@ int main(int argc, char *argv[]) {
    status = rifContextCreateImage(context, &output_desc, nullptr, &outputImage);
       if (status != RIF_SUCCESS) return -1;
 
-   printf("\n");
 // Create image filter
 // Attach filter and set parameters
 if (filter_name) {
@@ -203,22 +200,25 @@ if (filter_name) {
                                            &filter);
          if (status != RIF_SUCCESS) return -1;
 
-      const rif_char *ret_model_path = "./RadeonImageFilter/models";
+      rif_char ret_model_path[128] = "./RadeonImageFilter/models";
+
       rifImageFilterSetParameterString(filter, "modelPath", ret_model_path);
 
       if (!use_default) {
          rif_uint ret_param;
 
          printf("Select upscale mode : \n"
-                "[0: Fast] \n [1: Good (Default)] \n [2: Best]\n");
+                " [0: Fast] \n [1: Good (Default)] \n [2: Best]\n");
             scanf("%1u%*[^\n]", &ret_param);
    
-            rifImageFilterSetParameter1u(filter, "mode", ret_param);
+         rifImageFilterSetParameter1u(filter, "mode", ret_param);
          
-         printf("Path to model files (Default: ./RadeonImageFilter/models) : \n");
-            scanf("%63s%*[^\n]", ret_model_path);
-         
-         rifImageFilterSetParameterString(filter, "modelPath", ret_model_path);
+         printf("Path to model files (Default: ./RadeonImageFilter/models) \n"
+                " (enter \".\" if use default path) : ");
+            scanf("%127s%*[^\n]", &ret_model_path);
+
+         if (strcmp(".", ret_model_path))
+            rifImageFilterSetParameterString(filter, "modelPath", ret_model_path);
       }
 
    } else if (!strcmp("gaussian_blur", filter_name)) {
@@ -309,7 +309,7 @@ if (filter_name) {
 
    } else if (!strcmp("dynamic_resample", filter_name)) {
    // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/resampling.html
-   // https://github.com/GPUOpen-LibrariesAndSDKs/RadeonImageFilter/blob/master/include/RadeonImageFilters.h#L237
+   // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/info_setting_types/rif_image_filter_interpolation_operator.html
       status = rifContextCreateImageFilter(context,
                                           RIF_IMAGE_FILTER_RESAMPLE_DYNAMIC,
                                           &filter);
@@ -755,6 +755,19 @@ if (filter_name) {
          rifImageFilterSetParameter1f(filter, "sharpness", ret_param);
       }
 
+   } else if (!strcmp("ai_custom", filter_name)) {
+   // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/ai_custom_model.html
+      status = rifContextCreateImageFilter(context,
+                                          RIF_CUSTOM_AI_MODEL,
+                                          &filter);
+         if (status != RIF_SUCCESS) return -1;
+
+      rif_char ret_model_path[128];
+      printf("Path to machine learning model file : ");
+         scanf("%127s%*[^\n]", &ret_model_path);
+
+      rifImageFilterSetParameterString(filter, "modelPath", ret_model_path);
+
    } else if (!strcmp("bgra_to_rgba", filter_name)) {
    // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/bgra_to_rgba_conversion.html
       status = rifContextCreateImageFilter(context,
@@ -832,26 +845,31 @@ if (filter_name) {
 /*
    } else if (!strcmp("motion_buffer", filter_name)) {
    // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/motion_buffer.html
-      rif_float ret_param[16] = { -1.94444f, +0.0f, +0.0f, +0.0f, +0.0f, +1.94444f, +0.0f, -1.94444f, +0.0f, +0.0f, +1.0f, -3.0f, +0.0f, +0.0f, +1.0f, -3.0f, };
-      
       status = rifContextCreateImageFilter(context,
                                           RIF_IMAGE_FILTER_MOTION_BUFFER,
                                           &filter);
          if (status != RIF_SUCCESS) return -1;
 
+      rif_float ret_param[16] = {   -1.94444f,  +0.0f,      +0.0f,   +0.0f,
+                                    +0.0f,      +1.94444f,  +0.0f,   -1.94444f,
+                                    +0.0f,      +0.0f,      +1.0f,   -3.0f,
+                                    +0.0f,      +0.0f,      +1.0f,   -3.0f, };
+      
       rifImageFilterSetParameter16f(filter, "viewProjMatrix", ret_param);
 
    } else if (!strcmp("ndc_depth", filter_name)) {
    // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/ndc_depth.html
-      rif_float ret_param[16] = { -1.94444f, +0.0f, +0.0f, +0.0f, +0.0f, +1.94444f, +0.0f, -1.94444f, +0.0f, +0.0f, +1.0f, -3.0f, +0.0f, +0.0f, +1.0f, -3.0f, };
-
       status = rifContextCreateImageFilter(context,
                                           RIF_IMAGE_FILTER_NDC_DEPTH,
                                           &filter);
          if (status != RIF_SUCCESS) return -1;
 
-      rifImageFilterSetParameter16f(filter, "viewProjMatrix", ret_param);
+      rif_float ret_param[16] = {   +1.0f,      +0.0f,      +0.0f,   +0.0f,
+                                    +0.0f,      +1.0f,      +0.0f,   +0.0f,
+                                    +0.0f,      +0.0f,      +1.0f,   +0.0f,
+                                    +0.0f,      +0.0f,      +1.0f,   +1.0f, };
 
+      rifImageFilterSetParameter16f(filter, "viewProjMatrix", ret_param);
 */
    } else if (!strcmp("posterize", filter_name)) {
    // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/posterization.html
@@ -925,7 +943,7 @@ if (filter_name) {
          if (status != RIF_SUCCESS) return -1;
 
       if (!use_default) {
-         rif_uint ret_param[2];
+         rif_uint ret_param[2] = {0};
    
          printf("Offsets [(x, y)] : ");
             scanf("%u%*[^\n], %u%*[^\n],", &ret_param[0], &ret_param[1]);
@@ -941,6 +959,11 @@ if (filter_name) {
 } else {
    return -1;
 }
+   // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/info_setting_types/rif_compute_type.html
+   // RIF_COMPUTE_TYPE_FLOAT  0x0
+   // RIF_COMPUTE_TYPE_HALF   0x1
+   // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/api/rifimagefiltersetcomputetype.html
+   // rifImageFilterSetComputeType(filter, RIF_COMPUTE_TYPE_FLOAT);
 
    status = rifCommandQueueAttachImageFilter(queue, filter, inputImage, outputImage);
       if (status != RIF_SUCCESS) {
@@ -948,9 +971,12 @@ if (filter_name) {
          return -1;
       }
 
+//   rif_performance_statistic perf = {0};
+
 // Execute queue
    status = rifContextExecuteCommandQueue(context, queue, nullptr, nullptr, nullptr);
       if (status != RIF_SUCCESS) return -1;
+//   printf("exe: %u\ncompile: %f\n", perf.execution_time, perf.compile_time);
 
    rif_uchar *output_data;
    status = rifImageMap(outputImage, RIF_IMAGE_MAP_READ, (void**)&output_data);
@@ -970,15 +996,6 @@ if (!strcmp(".jpg", output_ext) || !strcmp(".jpeg", output_ext)) {
 
 } else if (!strcmp(".png", output_ext)) {
 /*
-   status = ImageTools::SaveImage(outputImage, output_path);
-      if (status) {
-         printf("\nSuccess\n");
-      } else {
-         printf("\nError: output image\n");
-         return -1;
-      }
-*/
-/*
  *    int stbi_write_png(char const *filename,
  *                       int w, int h,
  *                       int comp,
@@ -989,6 +1006,15 @@ if (!strcmp(".jpg", output_ext) || !strcmp(".jpeg", output_ext)) {
                            output_desc.num_components,
                            output_data, 0);
 }
+/*
+   status = ImageTools::SaveImage(outputImage, output_path);
+      if (status) {
+         printf("\nSuccess\n");
+      } else {
+         printf("\nError: output image\n");
+         return -1;
+      }
+*/
 
    if (status) {
       printf("\nSuccess: %s\n", realpath(output_path, NULL));
@@ -998,6 +1024,7 @@ if (!strcmp(".jpg", output_ext) || !strcmp(".jpeg", output_ext)) {
    }
    status = rifImageUnmap(outputImage, output_data);
       if (status != RIF_SUCCESS) return -1;
+   stbi_image_free(output_data);
    
 // Free resources
    rifCommandQueueDetachImageFilter(queue, filter);
