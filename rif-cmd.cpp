@@ -15,8 +15,17 @@
 
 // g++ rif-cmd.cpp -L./RadeonImageFilter/Ubuntu18/Dynamic/ -L./RadeonImageFilter/Ubuntu18/Static/ -lRadeonImageFilters -o rif-cmd
 
+#if defined(WIN32) || defined(_WIN32)
+   #define BACKEND_TYPE RIF_BACKEND_API_DIRECTX12
+#elif __APPLE__
+   #define BACKEND_TYPE RIF_BACKEND_API_METAL
+#else
+   #define BACKEND_TYPE RIF_BACKEND_API_OPENCL
+#endif
+
 int main(int argc, char *argv[]) {
    int i, quality = 0;
+   int backend = BACKEND_TYPE;
    rif_bool    use_default = false;
    const rif_char *input_path, *filter_name, *input_ext, *output_ext;
    FILE *file_check;
@@ -90,6 +99,18 @@ int main(int argc, char *argv[]) {
             return -1;
          }
 
+      } else if (!strcmp("--api", argv[i])) {
+         if (i + 1 < argc) {
+            i++;
+
+            if (!strcmp("dx12", argv[i])) {
+               backend = RIF_BACKEND_API_DIRECTX12;
+            } else if (!strcmp("metal", argv[i])) {
+               backend = RIF_BACKEND_API_METAL;
+            } else if (!strcmp("ocl", argv[i]) || !strcmp("opencl", argv[i])) {
+               backend = RIF_BACKEND_API_OPENCL;
+            }
+         }
       } else {
          printf("Error: Unknown Option \"%s\"\n", argv[i]);
          return -1;
@@ -103,13 +124,31 @@ int main(int argc, char *argv[]) {
    rif_image            inputImage  = nullptr;
    rif_image            outputImage = nullptr;
 
+   rif_char backend_api_name[16];
+
+   switch(backend) {
+      case RIF_BACKEND_API_OPENCL:
+         strcpy(backend_api_name, "OpenCL");
+         break;
+      case RIF_BACKEND_API_DIRECTX12: 
+         strcpy(backend_api_name, "DirectX12");
+         break;
+      case RIF_BACKEND_API_METAL:
+         strcpy(backend_api_name, "Metal");
+         break;
+      default:
+         strcpy(backend_api_name, "Unknown");
+         break;
+   }
+
+   printf("Backend API: %s\n\n", backend_api_name);
 
 // First create context and queue
    int deviceCount = 0;
-   status = rifGetDeviceCount(RIF_BACKEND_API_OPENCL, &deviceCount);
+   status = rifGetDeviceCount(backend, &deviceCount);
       if (status != RIF_SUCCESS) return -1;
    if (deviceCount > 0 || status) {
-      status = rifCreateContext(RIF_API_VERSION, RIF_BACKEND_API_OPENCL, 0, nullptr, &context);
+      status = rifCreateContext(RIF_API_VERSION, backend, 0, nullptr, &context);
          if (status != RIF_SUCCESS || !context) return -1;
    }
 

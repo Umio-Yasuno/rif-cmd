@@ -15,10 +15,11 @@ rif-cmd is a command line tool for image processing with [RadeonImageFilter](htt
 
 ```
 OPTIONS:
-  -i <path>                       input image path
-  -o <path>                      output image path
-  -f, --filter <name>            filter name
-  -q <value>[0, 100]             JPEG quality
+  -i <path>                     input image path
+  -o <path>                     output image path
+  -f, --filter <name>           filter name
+  -q <value>                    JPEG quality [0, 100]
+  --api <api name>              Backend API (ocl/opencl, dx12, metal)
 
 FLAGS:
   -d, --default                 use default parameter
@@ -30,10 +31,9 @@ FLAGS:
 
 ## Supported
 
-  * Linux x86_64 (OpenCL)
+  * OpenCL, DX12, Metal
 
   RIF SDK is a cross-platform. (DX12, OpenCL, Metal)  
-  I can't verify it because I don't have the environment, but I'll add support.  
 
 ## Known Issues
 
