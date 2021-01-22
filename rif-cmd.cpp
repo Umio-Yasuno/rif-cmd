@@ -206,9 +206,11 @@ if (filter_name) {
 
       if (!use_default) {
          rif_uint ret_param;
-
+            //    #define RIF_AI_UPSCALE_MODE_GOOD_2X 0x1u
+            //    #define RIF_AI_UPSCALE_MODE_BEST_2X 0x2u
+            //    #define RIF_AI_UPSCALE_MODE_FAST_2X 0x3u
          printf("Select upscale mode : \n"
-                " [0: Fast] \n [1: Good (Default)] \n [2: Best]\n");
+                " [1: Good (Default)] \n [2: Best] \n [3: Fast] \n");
             scanf("%1u%*[^\n]", &ret_param);
    
          rifImageFilterSetParameter1u(filter, "mode", ret_param);
