@@ -49,9 +49,11 @@ rif_image_filter set_param(rif_context       context,
                                   RIF_IMAGE_FILTER_ROTATE,
                                   &filter);
 
-      output_desc->image_width  = output_desc->image_height;
-      output_desc->image_height = output_desc->image_width;
+      rif_int tmp_width          =  output_desc->image_width;
+      output_desc->image_width   =  output_desc->image_height;
+      output_desc->image_height  =  tmp_width;
 
+//      rifContextCreateImage(context, output_desc, nullptr, (rif_image*)outputImage);
 // Blurring and Resampling Filters
    } else if (!strcmp("ai_upscale", filter_name)) {
    // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/ai_upscale.html
@@ -990,18 +992,19 @@ int main(int argc, char *argv[]) {
 
 // Create image filter
 // Attach filter and set parameters
-   printf("fc: %d\n", filter_count);
-
+//   printf("fc: %d\n", filter_count);
    rif_image_filter filter[filter_count] = { nullptr };
 
 for (i=0; i < filter_count; i++) {
 
-   printf("filter_name-%d: %s\n", i, filter_name[i]);
+   //   printf("filter_name-%d: %s\n", i, filter_name[i]);
    filter[i] = set_param(context,
                          filter_name[i],
                          filter[i],
                          use_default,
                          &output_desc);
+   if (filter[i] == NULL)
+      return -1;
 
    /*
     * https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/info_setting_types/rif_compute_type.html
@@ -1010,31 +1013,29 @@ for (i=0; i < filter_count; i++) {
     * https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/api/rifimagefiltersetcomputetype.html
     * rifImageFilterSetComputeType(filter, RIF_COMPUTE_TYPE_FLOAT);
     */
-
 /*
+ *    https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/combining_filters.html
+ *
  *    with buffer
  */
- /*
+/*
    if (i == 0) {
-      printf("i == 0\n");
-      status = rifImageFilterSetParameterImage(filter[i], "srcBuffer", inputImage);
-         if (status != RIF_SUCCESS) return -1;
+   //      printf("\ti == 0\n");
+      rifImageFilterSetParameterImage(filter[i], "srcBuffer", inputImage);
    } else if (i > 0 && i < filter_count - 1) {
-      printf("i > 0 && i < filter_count - 1\n");
-      status = rifImageFilterSetParameterImage(filter[i], "srcBuffer",
-                                               (rif_image)(filter[i-1]));
-         if (status != RIF_SUCCESS) return -1;
+   //      printf("\ti > 0 && i < filter_count - 1\n");
+      rifImageFilterSetParameterImage(filter[i], "srcBuffer",
+                                      (rif_image)(filter[i-1]));
    } else if (i == filter_count - 1) {
-      printf("i == filter_count - 1\n");
-      status = rifCommandQueueAttachImageFilter(queue, filter[i],
-                                                (rif_image)(filter[i-1]), outputImage);
-         if (status != RIF_SUCCESS) return -1;
+   //      printf("\ti == filter_count - 1\n");
+      rifCommandQueueAttachImageFilter(queue, filter[i],
+                                       (rif_image)(filter[i-1]), outputImage);
    }
 */
-
 /*
  *    without buffer
  */
+   
    if (i == 0 || i % 2 == 0) {
       rifCommandQueueAttachImageFilter(queue, filter[i], inputImage,  outputImage);
    } else {
@@ -1043,13 +1044,13 @@ for (i=0; i < filter_count; i++) {
 
    if (i == filter_count - 1 && filter_count - 1 % 2 == 1) {
       rif_image_filter fill_filter = nullptr;
+
       rifContextCreateImageFilter(context,
                                   RIF_IMAGE_FILTER_CONVERT,
                                   &fill_filter);
 
       rifCommandQueueAttachImageFilter(queue, fill_filter, inputImage, outputImage);
    }
-
  //     rifCommandQueueAttachImageFilter(queue, nullptr, inputImage,  outputImage);
 //   rifCommandQueueAttachImageFilter(queue, filter[i], inputImage, outputImage);
 }
@@ -1103,7 +1104,7 @@ if (!strcmp(".jpg", output_ext) || !strcmp(".jpeg", output_ext)) {
 */
 
    if (status) {
-      printf("\nSuccess: %s\n", realpath(output_path, NULL));
+      printf("\nSuccess: %s\n", output_path);
    } else {
       printf("\nError: output image\n");
       return -1;
