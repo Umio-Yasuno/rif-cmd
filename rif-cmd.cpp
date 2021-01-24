@@ -1018,24 +1018,27 @@ for (i=0; i < filter_count; i++) {
  *
  *    with buffer
  */
-/*
-   if (i == 0) {
-   //      printf("\ti == 0\n");
+   if (i == 0 && filter_count == 1) {
+      rifCommandQueueAttachImageFilter(queue, filter[i], inputImage, outputImage);
+
+   } else if (i == 0) {
       rifImageFilterSetParameterImage(filter[i], "srcBuffer", inputImage);
+
    } else if (i > 0 && i < filter_count - 1) {
-   //      printf("\ti > 0 && i < filter_count - 1\n");
-      rifImageFilterSetParameterImage(filter[i], "srcBuffer",
-                                      (rif_image)(filter[i-1]));
+      rifImageFilterSetParameterImage(filter[i], "srcBuffer", (rif_image)(filter[i-1]));
+
    } else if (i == filter_count - 1) {
-   //      printf("\ti == filter_count - 1\n");
       rifCommandQueueAttachImageFilter(queue, filter[i],
                                        (rif_image)(filter[i-1]), outputImage);
+
+   } else {
+      printf("What?\n");
+      return -1;
    }
-*/
 /*
  *    without buffer
  */
-   
+/*   
    if (i == 0 || i % 2 == 0) {
       rifCommandQueueAttachImageFilter(queue, filter[i], inputImage,  outputImage);
    } else {
@@ -1051,6 +1054,7 @@ for (i=0; i < filter_count; i++) {
 
       rifCommandQueueAttachImageFilter(queue, fill_filter, inputImage, outputImage);
    }
+*/
  //     rifCommandQueueAttachImageFilter(queue, nullptr, inputImage,  outputImage);
 //   rifCommandQueueAttachImageFilter(queue, filter[i], inputImage, outputImage);
 }
@@ -1102,7 +1106,6 @@ if (!strcmp(".jpg", output_ext) || !strcmp(".jpeg", output_ext)) {
          return -1;
       }
 */
-
    if (status) {
       printf("\nSuccess: %s\n", output_path);
    } else {
@@ -1114,10 +1117,8 @@ if (!strcmp(".jpg", output_ext) || !strcmp(".jpeg", output_ext)) {
    stbi_image_free(output_data);
    
 // Free resources
-   for (i=0; i < filter_count; i++) {
-      rifCommandQueueDetachImageFilter(queue, filter[i]);
-      rifObjectDelete(filter[i]);
-   }
+   rifCommandQueueDetachImageFilter(queue, filter[filter_count-1]);
+   rifObjectDelete(filter[filter_count-1]);
    rifObjectDelete(inputImage);
    rifObjectDelete(outputImage);
    rifObjectDelete(queue);
