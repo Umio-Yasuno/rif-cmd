@@ -642,15 +642,12 @@ rif_image_filter set_param(rif_context       context,
             rifImageFilterSetParameter1f(filter, ret_param_name[i],  ret_param[i]);
          }
       }
-   /*
-   } else if (!strcmp("convert"), filter_name) {
+   } else if (!strcmp("convert", filter_name)) {
    // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/convert.html
-      
-      status = rifContextCreateImageFilter(context,
-                                          RIF_IMAGE_FILTER_CONVERT,
-                                          &filter);
-         if (status != RIF_SUCCESS) return -1;
-   */
+      rifContextCreateImageFilter(context,
+                                  RIF_IMAGE_FILTER_CONVERT,
+                                  &filter);
+
    } else if (!strcmp("dilate_erode", filter_name)) {
    // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/dilate.html
       rifContextCreateImageFilter(context,
@@ -1043,10 +1040,17 @@ for (i=0; i < filter_count; i++) {
    } else {
       rifCommandQueueAttachImageFilter(queue, filter[i], outputImage, inputImage);
    }
-/*
-   if (i == filter_count - 1 && filter_count % 2 == 1)
-      rifCommandQueueAttachImageFilter(queue, filter[i], inputImage,  outputImage);
-*/
+
+   if (i == filter_count - 1 && filter_count - 1 % 2 == 1) {
+      rif_image_filter fill_filter = nullptr;
+      rifContextCreateImageFilter(context,
+                                  RIF_IMAGE_FILTER_CONVERT,
+                                  &fill_filter);
+
+      rifCommandQueueAttachImageFilter(queue, fill_filter, inputImage, outputImage);
+   }
+
+ //     rifCommandQueueAttachImageFilter(queue, nullptr, inputImage,  outputImage);
 //   rifCommandQueueAttachImageFilter(queue, filter[i], inputImage, outputImage);
 }
 
