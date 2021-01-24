@@ -23,11 +23,11 @@
    #define BACKEND_TYPE RIF_BACKEND_API_OPENCL
 #endif
 
-rif_image_filter set_param(  rif_context context,
-                             const rif_char *filter_name,
-                             rif_image_filter filter,
-                             rif_bool use_default,
-                             rif_image_desc *output_desc)
+rif_image_filter set_param(rif_context       context,
+                           const rif_char    *filter_name,
+                           rif_image_filter  filter,
+                           rif_bool          use_default,
+                           rif_image_desc    *output_desc)
 {
    int i;
 // Rotating Filters
@@ -39,9 +39,9 @@ rif_image_filter set_param(  rif_context context,
 
    } else if (!strcmp("flip_v", filter_name)) {
    // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/vertical_flip.html
-      rifContextCreateImageFilter(  context,
-                                    RIF_IMAGE_FILTER_FLIP_VERT,
-                                    &filter);
+      rifContextCreateImageFilter(context,
+                                  RIF_IMAGE_FILTER_FLIP_VERT,
+                                  &filter);
 
    } else if (!strcmp("rotate", filter_name)) {
    // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/rotation.html
@@ -55,7 +55,6 @@ rif_image_filter set_param(  rif_context context,
       /*
        *    not work with Polaris11(gfx803) + MIOpen v2.0.5
        */
-
       rifContextCreateImageFilter(context,
                                   RIF_IMAGE_FILTER_AI_UPSCALE,
                                   &filter);
@@ -111,11 +110,10 @@ rif_image_filter set_param(  rif_context context,
       rifContextCreateImageFilter(context,
                                   RIF_IMAGE_FILTER_MOTION_BLUR,
                                   &filter);
-
       /*
-         RIF 1.6.2 workaround
-         https://github.com/GPUOpen-LibrariesAndSDKs/RadeonImageFilter/issues/8
-      */
+       *    RIF 1.6.2 workaround
+       *    https://github.com/GPUOpen-LibrariesAndSDKs/RadeonImageFilter/issues/8
+       */
          rifImageFilterSetParameter1u(filter, "radius", 4u);
          rifImageFilterSetParameter1u(filter, "radius", 5u);
 
@@ -794,19 +792,17 @@ rif_image_filter set_param(  rif_context context,
 }
 
 int main(int argc, char *argv[]) {
-   int i, quality = 0;
-   int backend = BACKEND_TYPE;
-   rif_bool    use_default = false;
-   const rif_char *input_path, *filter_name, *input_ext, *output_ext;
+   int i, select_device = 0, quality = 0, backend = BACKEND_TYPE;
+   rif_bool use_default = false;
+   const rif_char *input_path = NULL, *filter_name = NULL, *input_ext = NULL, *output_ext = NULL;
    FILE *file_check;
 
    const rif_char *output_path = "out.png";
 
    for (i=1; i < argc; i++) {
       if (!strcmp("-i", argv[i])) {
-         if (i + 1 < argc) {
+         if (i+1 < argc) {
             i++;
-
             file_check  = fopen(argv[i], "r");
 
             if (file_check) {
@@ -816,28 +812,27 @@ int main(int argc, char *argv[]) {
                printf("Error: \"%s\" not found\n", argv[i]);
                return -1;
             }
-
          } else {
-            printf("Error: Please input image path\n");
+            printf("Error: Please enter the path of input image\n");
             return -1;
          }
-
       } else if (!strcmp("-o", argv[i])) {
-         if (i + 1 < argc) {
+         if (i+1 < argc) {
             i++;
 
             output_path = argv[i];
             output_ext  = strrchr(output_path, '.');
          } else {
-            printf("Error: Please output image path\n");
+            printf("Error: Please enter the path of output image\n");
             return -1;
          }
       } else if (!strcmp("-f", argv[i]) || !strcmp("--filter", argv[i])) {
-         if (i + 1 < argc) {
+         if (i+1 < argc) {
             i++;
+
             filter_name = argv[i];
          } else {
-            printf("Error: Please filter name\n");
+            printf("Error: Please enter the filter name\n");
             return -1;
          }
       } else if (!strcmp("-d", argv[i]) || !strcmp("--default", argv[i])) {
@@ -846,31 +841,38 @@ int main(int argc, char *argv[]) {
       } else if (!strcmp("-v", argv[i]) || !strcmp("--version", argv[i])) {
          printf("rif-cmd version: 0.0.0\n");
          printf("RIF API version: %s\n", RIF_API_VERSION_STRING);
-
-         return 0;
+            return 0;
       } else if (!strcmp("-q", argv[i])) {
-         if (i + 1 < argc) {
+         if (i+1 < argc) {
             i++;
 
             quality = atoi(argv[i]);
          } else {
-            printf("Error: Please quality value\n");
+            printf("Error: Please enter the quality value\n");
+            return -1;
+         }
+      } else if (!strcmp("-g", argv[i]) || !strcmp("--gpu", argv[i])) {
+         if (i+1 < argc) {
+            i++;
+
+            select_device = atoi(argv[i]);
+         } else {
+            printf("Error: Please enter the ID of the select device\n");
             return -1;
          }
       } else if (!strcmp("--trace", argv[i])) {
       // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/tracing.html
-         if (i + 1 < argc) {
+         if (i+1 < argc) {
             i++;
 
             setenv("RIF_TRACING_ENABLED", "1", 0);
             setenv("RIF_TRACING_PATH", argv[i], 0);
          } else {
-            printf("Error: Please path to output the tracing file\n");
+            printf("Error: Please enter the path to output the tracing file\n");
             return -1;
          }
-
       } else if (!strcmp("--api", argv[i])) {
-         if (i + 1 < argc) {
+         if (i+1 < argc) {
             i++;
 
             if (!strcmp("dx12", argv[i])) {
@@ -886,7 +888,17 @@ int main(int argc, char *argv[]) {
          return -1;
       }
    }
-   
+
+   if (input_path == NULL) {
+      printf("Error: Please enter the path of input image\n"
+             " ( %s -i <path> ... )\n", argv[0]);
+      return -1;
+   }
+   if (filter_name == NULL) {
+      printf("Error: Please enter the filte name\n");
+      return -1;
+   }
+
    rif_int              status   = RIF_SUCCESS;
    rif_context          context  = nullptr;
    rif_command_queue    queue    = nullptr;
@@ -896,7 +908,7 @@ int main(int argc, char *argv[]) {
 
    rif_char backend_api_name[16];
 
-   switch(backend) {
+   switch (backend) {
       case RIF_BACKEND_API_OPENCL:
          strcpy(backend_api_name, "OpenCL");
          break;
@@ -917,8 +929,9 @@ int main(int argc, char *argv[]) {
    int deviceCount = 0;
    status = rifGetDeviceCount(backend, &deviceCount);
       if (status != RIF_SUCCESS) return -1;
+
    if (deviceCount > 0 || status) {
-      status = rifCreateContext(RIF_API_VERSION, backend, 0, nullptr, &context);
+      status = rifCreateContext(RIF_API_VERSION, backend, select_device, nullptr, &context);
          if (status != RIF_SUCCESS || !context) return -1;
    }
 
@@ -974,15 +987,12 @@ int main(int argc, char *argv[]) {
 
 // Create image filter
 // Attach filter and set parameters
-if (filter_name) {
-   filter = set_param (context,
-                       filter_name,
-                       filter,
-                       use_default,
-                       &output_desc);
-} else {
-   return -1;
-}
+   filter = set_param(context,
+                      filter_name,
+                      filter,
+                      use_default,
+                      &output_desc);
+
    // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/info_setting_types/rif_compute_type.html
    // RIF_COMPUTE_TYPE_FLOAT  0x0
    // RIF_COMPUTE_TYPE_HALF   0x1
@@ -1005,24 +1015,28 @@ if (filter_name) {
 if (!strcmp(".jpg", output_ext) || !strcmp(".jpeg", output_ext)) {
 /*
  *     int stbi_write_jpg(char const *filename,
- *                        int w, int h,
+ *                        int w,
+ *                        int h,
  *                        int comp,
  *                        const void *data, int quality);
  */
    status = stbi_write_jpg(output_path,
-                           output_desc.image_width, output_desc.image_height,
+                           output_desc.image_width,
+                           output_desc.image_height,
                            output_desc.num_components,
                            output_data, quality);
 
 } else if (!strcmp(".png", output_ext)) {
 /*
  *    int stbi_write_png(char const *filename,
- *                       int w, int h,
+ *                       int w,
+ *                       int h,
  *                       int comp,
  *                       const void  *data, int stride_in_bytes)
  */
    status = stbi_write_png(output_path,
-                           output_desc.image_width, output_desc.image_height,
+                           output_desc.image_width,
+                           output_desc.image_height,
                            output_desc.num_components,
                            output_data, 0);
 }
