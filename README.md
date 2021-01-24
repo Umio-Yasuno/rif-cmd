@@ -19,6 +19,7 @@ OPTIONS:
   -o <path>                     output image path
   -f, --filter <name>           filter name
   -q <value>                    JPEG quality [0, 100]
+  -g, --gpu <device_id>         select device
   --api <api name>              Backend API (ocl/opencl, dx12, metal)
 
 FLAGS:
