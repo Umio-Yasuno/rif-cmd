@@ -860,17 +860,6 @@ int main(int argc, char *argv[]) {
             printf("Error: Please enter the ID of the select device\n");
             return -1;
          }
-      } else if (!strcmp("--trace", argv[i])) {
-      // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/tracing.html
-         if (i+1 < argc) {
-            i++;
-
-            setenv("RIF_TRACING_ENABLED", "1", 0);
-            setenv("RIF_TRACING_PATH", argv[i], 0);
-         } else {
-            printf("Error: Please enter the path to output the tracing file\n");
-            return -1;
-         }
       } else if (!strcmp("--api", argv[i])) {
          if (i+1 < argc) {
             i++;
@@ -883,12 +872,25 @@ int main(int argc, char *argv[]) {
                backend = RIF_BACKEND_API_OPENCL;
             }
          }
+      } else if (!strcmp("--trace", argv[i])) {
+      // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/tracing.html
+         if (i+1 < argc) {
+            i++;
+
+            setenv("RIF_TRACING_ENABLED", "1", 0);
+            setenv("RIF_TRACING_PATH", argv[i], 0);
+         } else {
+            printf("Error: Please enter the path to output the tracing file\n");
+            return -1;
+         }
+      } else if (!strcmp("--log", argv[i])) {
+         setenv("RIF_LOG_LEVEL", "7", 0);
       } else {
          printf("Error: Unknown Option \"%s\"\n", argv[i]);
          return -1;
       }
    }
-
+   
    if (input_path == NULL) {
       printf("Error: Please enter the path of input image\n"
              " ( %s -i <path> ... )\n", argv[0]);
