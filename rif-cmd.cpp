@@ -1036,13 +1036,13 @@ for (i=0; i < filter_count; i++) {
  *    without buffer
  */
    
-   if (i == 0 || i % 2 == 0) {
+   if (i % 2 == 0) {
       rifCommandQueueAttachImageFilter(queue, filter[i], inputImage,  outputImage);
    } else {
       rifCommandQueueAttachImageFilter(queue, filter[i], outputImage, inputImage);
    }
 
-   if (i == filter_count - 1 && filter_count - 1 % 2 == 1) {
+   if (i == filter_count - 1 && i % 2 == 1) {
       rif_image_filter fill_filter = nullptr;
 
       rifContextCreateImageFilter(context,
