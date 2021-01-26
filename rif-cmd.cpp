@@ -1024,7 +1024,7 @@ for (i=0; i < filter_count; i++) {
    } else if (i == 0) {
       rifImageFilterSetParameterImage(filter[i], "srcBuffer", inputImage);
 
-   } else if (i > 0 && i < filter_count - 1) {
+   } else if (0 < i && i < filter_count - 1) {
       rifImageFilterSetParameterImage(filter[i], "srcBuffer", (rif_image)(filter[i-1]));
 
    } else if (i == filter_count - 1) {
