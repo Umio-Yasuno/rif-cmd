@@ -3,4 +3,4 @@ rif-cmd
 input/
 output/
 kernelsCache/
-build.sh
+*\.o
