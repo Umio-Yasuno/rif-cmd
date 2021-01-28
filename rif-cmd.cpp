@@ -49,6 +49,11 @@ rif_image_filter set_param(rif_context       context,
                                   RIF_IMAGE_FILTER_ROTATE,
                                   &filter);
 
+      rif_int tmp_width          =  output_desc->image_width;
+      output_desc->image_width   =  output_desc->image_height;
+      output_desc->image_height  =  tmp_width;
+
+//      rifContextCreateImage(context, output_desc, nullptr, (rif_image*)outputImage);
 // Blurring and Resampling Filters
    } else if (!strcmp("ai_upscale", filter_name)) {
    // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/ai_upscale.html
@@ -639,15 +644,12 @@ rif_image_filter set_param(rif_context       context,
             rifImageFilterSetParameter1f(filter, ret_param_name[i],  ret_param[i]);
          }
       }
-   /*
-   } else if (!strcmp("convert"), filter_name) {
+   } else if (!strcmp("convert", filter_name)) {
    // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/convert.html
-      
-      status = rifContextCreateImageFilter(context,
-                                          RIF_IMAGE_FILTER_CONVERT,
-                                          &filter);
-         if (status != RIF_SUCCESS) return -1;
-   */
+      rifContextCreateImageFilter(context,
+                                  RIF_IMAGE_FILTER_CONVERT,
+                                  &filter);
+
    } else if (!strcmp("dilate_erode", filter_name)) {
    // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/dilate.html
       rifContextCreateImageFilter(context,
@@ -792,9 +794,9 @@ rif_image_filter set_param(rif_context       context,
 }
 
 int main(int argc, char *argv[]) {
-   int i, select_device = 0, quality = 0, backend = BACKEND_TYPE;
+   int i, select_device = 0, quality = 0, backend = BACKEND_TYPE, filter_count = 0;
    rif_bool use_default = false;
-   const rif_char *input_path = NULL, *filter_name = NULL, *input_ext = NULL, *output_ext = NULL;
+   const rif_char *input_path = NULL, *filter_name[9] = { NULL }, *input_ext = NULL, *output_ext = NULL;
    FILE *file_check;
 
    const rif_char *output_path = "out.png";
@@ -830,7 +832,8 @@ int main(int argc, char *argv[]) {
          if (i+1 < argc) {
             i++;
 
-            filter_name = argv[i];
+            filter_name[filter_count] = argv[i];
+            filter_count++;
          } else {
             printf("Error: Please enter the filter name\n");
             return -1;
@@ -894,15 +897,17 @@ int main(int argc, char *argv[]) {
              " ( %s -i <path> ... )\n", argv[0]);
       return -1;
    }
-   if (filter_name == NULL) {
-      printf("Error: Please enter the filte name\n");
-      return -1;
+   for (i=0; i < filter_count; i++) {
+      if (filter_name[i] == NULL) {
+         printf("Error: Please enter the filte name\n");
+         return -1;
+      }
    }
 
    rif_int              status   = RIF_SUCCESS;
    rif_context          context  = nullptr;
    rif_command_queue    queue    = nullptr;
-   rif_image_filter     filter   = nullptr;
+//   rif_image_filter     filter   = nullptr;
    rif_image            inputImage  = nullptr;
    rif_image            outputImage = nullptr;
 
@@ -987,20 +992,68 @@ int main(int argc, char *argv[]) {
 
 // Create image filter
 // Attach filter and set parameters
-   filter = set_param(context,
-                      filter_name,
-                      filter,
-                      use_default,
-                      &output_desc);
+//   printf("fc: %d\n", filter_count);
+   rif_image_filter filter[filter_count] = { nullptr };
 
-   // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/info_setting_types/rif_compute_type.html
-   // RIF_COMPUTE_TYPE_FLOAT  0x0
-   // RIF_COMPUTE_TYPE_HALF   0x1
-   // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/api/rifimagefiltersetcomputetype.html
-   // rifImageFilterSetComputeType(filter, RIF_COMPUTE_TYPE_FLOAT);
+for (i=0; i < filter_count; i++) {
 
-   status = rifCommandQueueAttachImageFilter(queue, filter, inputImage, outputImage);
-      if (status != RIF_SUCCESS) return -1;
+   //   printf("filter_name-%d: %s\n", i, filter_name[i]);
+   filter[i] = set_param(context,
+                         filter_name[i],
+                         filter[i],
+                         use_default,
+                         &output_desc);
+   if (filter[i] == NULL)
+      return -1;
+
+   /*
+    * https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/info_setting_types/rif_compute_type.html
+    * RIF_COMPUTE_TYPE_FLOAT  0x0
+    * RIF_COMPUTE_TYPE_HALF   0x1
+    * https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/api/rifimagefiltersetcomputetype.html
+    * rifImageFilterSetComputeType(filter, RIF_COMPUTE_TYPE_FLOAT);
+    */
+/*
+ *    https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/combining_filters.html
+ *
+ *    with buffer
+ */
+/*
+   if (i == 0) {
+   //      printf("\ti == 0\n");
+      rifImageFilterSetParameterImage(filter[i], "srcBuffer", inputImage);
+   } else if (i > 0 && i < filter_count - 1) {
+   //      printf("\ti > 0 && i < filter_count - 1\n");
+      rifImageFilterSetParameterImage(filter[i], "srcBuffer",
+                                      (rif_image)(filter[i-1]));
+   } else if (i == filter_count - 1) {
+   //      printf("\ti == filter_count - 1\n");
+      rifCommandQueueAttachImageFilter(queue, filter[i],
+                                       (rif_image)(filter[i-1]), outputImage);
+   }
+*/
+/*
+ *    without buffer
+ */
+   
+   if (i % 2 == 0) {
+      rifCommandQueueAttachImageFilter(queue, filter[i], inputImage,  outputImage);
+   } else {
+      rifCommandQueueAttachImageFilter(queue, filter[i], outputImage, inputImage);
+   }
+
+   if (i == filter_count - 1 && i % 2 == 1) {
+      rif_image_filter fill_filter = nullptr;
+
+      rifContextCreateImageFilter(context,
+                                  RIF_IMAGE_FILTER_CONVERT,
+                                  &fill_filter);
+
+      rifCommandQueueAttachImageFilter(queue, fill_filter, inputImage, outputImage);
+   }
+ //     rifCommandQueueAttachImageFilter(queue, nullptr, inputImage,  outputImage);
+//   rifCommandQueueAttachImageFilter(queue, filter[i], inputImage, outputImage);
+}
 
 // Execute queue
 //   rif_performance_statistic perf = {0};
@@ -1051,7 +1104,7 @@ if (!strcmp(".jpg", output_ext) || !strcmp(".jpeg", output_ext)) {
 */
 
    if (status) {
-      printf("\nSuccess: %s\n", realpath(output_path, NULL));
+      printf("\nSuccess: %s\n", output_path);
    } else {
       printf("\nError: output image\n");
       return -1;
@@ -1061,10 +1114,12 @@ if (!strcmp(".jpg", output_ext) || !strcmp(".jpeg", output_ext)) {
    stbi_image_free(output_data);
    
 // Free resources
-   rifCommandQueueDetachImageFilter(queue, filter);
+   for (i=0; i < filter_count; i++) {
+      rifCommandQueueDetachImageFilter(queue, filter[i]);
+      rifObjectDelete(filter[i]);
+   }
    rifObjectDelete(inputImage);
    rifObjectDelete(outputImage);
-   rifObjectDelete(filter);
    rifObjectDelete(queue);
    rifObjectDelete(context);
 
