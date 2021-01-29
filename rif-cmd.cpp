@@ -32,7 +32,8 @@ rif_image_filter set_param(rif_context       context,
                            rif_image_desc    *output_desc);
 
 int main(int argc, char *argv[]) {
-   int i, select_device = 0, quality = 0, backend = BACKEND_TYPE, filter_count = 0;
+
+   int i, select_device = 0, quality = 0, backend = BACKEND_TYPE, filter_count = 0, max_filter = 9;
    rif_bool use_default = false;
    const rif_char *input_path = NULL, *filter_name[9] = { NULL }, *input_ext = NULL, *output_ext = NULL;
    FILE *file_check;
@@ -41,8 +42,7 @@ int main(int argc, char *argv[]) {
 
    for (i=1; i < argc; i++) {
       if (!strcmp("-i", argv[i])) {
-         if (i+1 < argc) {
-            i++;
+         if (++i < argc) {
             file_check  = fopen(argv[i], "r");
 
             if (file_check) {
@@ -50,71 +50,72 @@ int main(int argc, char *argv[]) {
                input_ext   = strrchr(input_path, '.');
             } else {
                printf("Error: \"%s\" not found\n", argv[i]);
-               return -1;
+                  return -1;
             }
          } else {
             printf("Error: Please enter the path of input image\n");
-            return -1;
+               return -1;
          }
       } else if (!strcmp("-o", argv[i])) {
-         if (i+1 < argc) {
-            i++;
+         if (++i < argc) {
 
             output_path = argv[i];
             output_ext  = strrchr(output_path, '.');
          } else {
             printf("Error: Please enter the path of output image\n");
-            return -1;
+               return -1;
          }
       } else if (!strcmp("-f", argv[i]) || !strcmp("--filter", argv[i])) {
-         if (i+1 < argc) {
-            i++;
-
-            filter_name[filter_count] = argv[i];
-            filter_count++;
+         if (++i < argc) {
+            if (filter_count < max_filter) {
+               filter_name[filter_count] = argv[i];
+               filter_count++;
+            } else {
+               printf("Up to %d filters\n", max_filter);
+               return -1;
+            }
          } else {
             printf("Error: Please enter the filter name\n");
-            return -1;
+               return -1;
          }
       } else if (!strcmp("-d", argv[i]) || !strcmp("--default", argv[i])) {
          printf("use default value\n");
          use_default = true;
+
       } else if (!strcmp("-v", argv[i]) || !strcmp("--version", argv[i])) {
          printf("rif-cmd version: 0.0.0\n");
          printf("RIF API version: %s\n", RIF_API_VERSION_STRING);
             return 0;
+
       } else if (!strcmp("-q", argv[i])) {
-         if (i+1 < argc) {
-            i++;
+         if (++i < argc && strncmp("-", argv[i], 1)) {
 
             quality = atoi(argv[i]);
+//            printf("q: %d, strcmp: %d\n", quality, strncmp("-", argv[i], 1));
          } else {
             printf("Error: Please enter the quality value\n");
-            return -1;
+               return -1;
          }
       } else if (!strcmp("-g", argv[i]) || !strcmp("--gpu", argv[i])) {
-         if (i+1 < argc) {
-            i++;
+         if (++i < argc && strncmp("-", argv[i], 1)) {
 
             select_device = atoi(argv[i]);
          } else {
             printf("Error: Please enter the ID of the select device\n");
-            return -1;
+               return -1;
          }
       } else if (!strcmp("--trace", argv[i])) {
       // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/tracing.html
-         if (i+1 < argc) {
-            i++;
+         if (++i < argc) {
 
             setenv("RIF_TRACING_ENABLED", "1", 0);
             setenv("RIF_TRACING_PATH", argv[i], 0);
          } else {
             printf("Error: Please enter the path to output the tracing file\n");
-            return -1;
+               return -1;
          }
       } else if (!strcmp("--api", argv[i])) {
-         if (i+1 < argc) {
-            i++;
+         if (++i < argc) {
 
             if (!strcmp("dx12", argv[i])) {
                backend = RIF_BACKEND_API_DIRECTX12;
@@ -122,11 +123,15 @@ int main(int argc, char *argv[]) {
                backend = RIF_BACKEND_API_METAL;
             } else if (!strcmp("ocl", argv[i]) || !strcmp("opencl", argv[i])) {
                backend = RIF_BACKEND_API_OPENCL;
+            } else {
+               printf("Unknown API: %s\n"
+                      "(Supported API: opencl/ocl, dx12, metal)\n", argv[i]);
+                  return -1;
             }
          }
       } else {
          printf("Error: Unknown Option \"%s\"\n", argv[i]);
-         return -1;
+            return -1;
       }
    }
 
@@ -134,12 +139,6 @@ int main(int argc, char *argv[]) {
       printf("Error: Please enter the path of input image\n"
              " ( %s -i <path> ... )\n", argv[0]);
       return -1;
-   }
-   for (i=0; i < filter_count; i++) {
-      if (filter_name[i] == NULL) {
-         printf("Error: Please enter the filte name\n");
-         return -1;
-      }
    }
 
    rif_int              status   = RIF_SUCCESS;
