@@ -25,17 +25,26 @@
    #define BACKEND_TYPE RIF_BACKEND_API_OPENCL
 #endif
 
-rif_image_filter set_param(rif_context       context,
-                           const rif_char    *filter_name,
-                           rif_image_filter  filter,
-                           rif_bool          use_default,
-                           rif_image_desc    *output_desc);
+#define MAX_FILTER 9
+
+int set_param(rif_context       context,
+              const rif_char    *filter_name,
+              rif_image_filter  filter,
+              rif_image_filter  *filterptr,
+              rif_bool          use_default,
+              rif_image_desc    *output_desc);
+
+typedef struct {
+   const char* filter_name = NULL;
+   int         count_param = 0;
+   char        param_string[128];
+} filter_param;
 
 int main(int argc, char *argv[]) {
 
-   int i, select_device = 0, quality = 0, backend = BACKEND_TYPE, filter_count = 0, max_filter = 9;
+   int i, select_device = 0, quality = 0, backend = BACKEND_TYPE, filter_count = 0, max_filter = MAX_FILTER;
    rif_bool use_default = false;
-   const rif_char *input_path = NULL, *filter_name[9] = { NULL }, *input_ext = NULL, *output_ext = NULL;
+   const rif_char *input_path = NULL, *filter_name[MAX_FILTER] = { NULL }, *input_ext = NULL, *output_ext = NULL;
    FILE *file_check;
 
    const rif_char *output_path = "out.png";
@@ -66,10 +75,12 @@ int main(int argc, char *argv[]) {
                return -1;
          }
       } else if (!strcmp("-f", argv[i]) || !strcmp("--filter", argv[i])) {
+         filter_param debug_param[9];
+
          if (++i < argc) {
             if (filter_count < max_filter) {
+               debug_param[filter_count].filter_name = argv[i];
                filter_name[filter_count] = argv[i];
-               filter_count++;
             } else {
                printf("Up to %d filters\n", max_filter);
                return -1;
@@ -78,6 +89,38 @@ int main(int argc, char *argv[]) {
             printf("Error: Please enter the filter name\n");
                return -1;
          }
+
+/*
+         if (++i < argc) {
+            printf("argv: %s \n", argv[i]);
+            int param_count = 0, j = 0;
+//            printf("strlen: %d\n", strlen(argv[i]));
+            int length = strlen(argv[i]);
+//            char debug[length++];
+            strncpy(debug_param[filter_count].param_string, argv[i], 127);
+//            printf("debug: %c\n", debug[4]);
+
+            const char *delim = ",";
+            printf("delim[0]: %c\n", delim[0]);
+
+            for (j=0; j < length; j++) {
+ //              printf("%c\n", debug[j]);
+               if (debug[j] == delim[0]) {
+                  param_count++;
+               }
+            }
+            
+            printf("paramc: %d\n", param_count);
+            char *arg_buff = strtok(argv[i], delim);
+
+            while(arg_buff != NULL) {
+               printf("buff: %s \n", arg_buff);
+               arg_buff = strtok(NULL, delim);
+            }
+*/
+            filter_count++;
+//            return -1;
+//         }
       } else if (!strcmp("-d", argv[i]) || !strcmp("--default", argv[i])) {
          printf("use default value\n");
          use_default = true;
@@ -229,27 +272,26 @@ int main(int argc, char *argv[]) {
 
 // Create image filter
 // Attach filter and set parameters
-//   printf("fc: %d\n", filter_count);
    rif_image_filter filter[filter_count] = { nullptr };
 
 for (i=0; i < filter_count; i++) {
 
-   //   printf("filter_name-%d: %s\n", i, filter_name[i]);
-   filter[i] = set_param(context,
-                         filter_name[i],
-                         filter[i],
-                         use_default,
-                         &output_desc);
-   if (filter[i] == NULL)
+   status = set_param(context,
+                      filter_name[i],
+                      filter[i],
+                      &filter[i],
+                      use_default,
+                      &output_desc);
+   if (status != RIF_SUCCESS)
       return -1;
 
-   /*
-    * https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/info_setting_types/rif_compute_type.html
-    * RIF_COMPUTE_TYPE_FLOAT  0x0
-    * RIF_COMPUTE_TYPE_HALF   0x1
-    * https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/api/rifimagefiltersetcomputetype.html
-    * rifImageFilterSetComputeType(filter, RIF_COMPUTE_TYPE_FLOAT);
-    */
+/*
+*  https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/info_setting_types/rif_compute_type.html
+*  RIF_COMPUTE_TYPE_FLOAT  0x0
+*  RIF_COMPUTE_TYPE_HALF   0x1
+*  https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/api/rifimagefiltersetcomputetype.html
+*  rifImageFilterSetComputeType(filter, RIF_COMPUTE_TYPE_FLOAT);
+*/
 /*
  *    https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/combining_filters.html
  *

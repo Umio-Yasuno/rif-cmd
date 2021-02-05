@@ -7,11 +7,12 @@
 
 #include "rif-cmd.h"
 
-rif_image_filter set_param(rif_context       context,
-                           const rif_char    *filter_name,
-                           rif_image_filter  filter,
-                           rif_bool          use_default,
-                           rif_image_desc    *output_desc)
+int set_param(rif_context       context,
+              const rif_char    *filter_name,
+              rif_image_filter  filter,
+              rif_image_filter  *filterptr,
+              rif_bool          use_default,
+              rif_image_desc    *output_desc)
 {
    int i;
 // Rotating Filters
@@ -771,10 +772,11 @@ rif_image_filter set_param(rif_context       context,
 
    } else {
       printf("  Unknown filter name: %s\n", filter_name);
-      return NULL;
+         return -1;
    }
 
-   return filter;
+   *filterptr = filter;
+      return RIF_SUCCESS;
 }
 
 
