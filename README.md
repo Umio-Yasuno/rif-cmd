@@ -24,6 +24,20 @@ OPTIONS:
 
 FLAGS:
   -d, --default                 use default parameter
+
+```
+
+### example
+
+```
+//  Basic
+$ ./rif-cmd -i input.png -o output.png -f bloom
+//   or
+$ ./rif-cmd -i input.png -o output.png -f bloom "0.1,0,0.1,1"
+
+//  Combining Filter
+$ ./rif-cmd -i input.png -o output.png -f bloom "0.1,0,0.1,1" -f motion_blur "5,1,1"
+
 ```
 
 ## Filters
@@ -45,7 +59,7 @@ FLAGS:
   * Filter $X is not implemented.
     * I'll add it soon, maybe.
 
-## RIF Document
+## RIF Documents
 
  * [Radeon Image Filters — AMD Radeon ProRender](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/about.html)
  * [Radeon™ Image Filtering Library - GPUOpen](https://gpuopen.com/radeon-image-filtering-library/)
