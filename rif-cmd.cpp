@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
          if (++i < argc) {
             if (filter_count < MAX_FILTER) {
                filter_param[filter_count].filter_name = argv[i];
-            //   filter_name[filter_count] = argv[i];
+
             } else {
                printf("Up to %d filters\n", MAX_FILTER);
                return -1;
@@ -93,8 +93,8 @@ int main(int argc, char *argv[]) {
                }
             }
          }
+
          filter_count++;
-//            return -1;
 
       } else if (!strcmp("-d", argv[i]) || !strcmp("--default", argv[i])) {
          printf("use default value\n");
@@ -107,9 +107,8 @@ int main(int argc, char *argv[]) {
 
       } else if (!strcmp("-q", argv[i])) {
          if (++i < argc && strncmp("-", argv[i], 1)) {
-
             quality = atoi(argv[i]);
-//            printf("q: %d, strcmp: %d\n", quality, strncmp("-", argv[i], 1));
+
          } else {
             printf("Error: Please enter the quality value\n");
                return -1;
@@ -125,9 +124,9 @@ int main(int argc, char *argv[]) {
       } else if (!strcmp("--trace", argv[i])) {
       // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/tracing.html
          if (++i < argc) {
-
             setenv("RIF_TRACING_ENABLED", "1", 0);
             setenv("RIF_TRACING_PATH", argv[i], 0);
+
          } else {
             printf("Error: Please enter the path to output the tracing file\n");
                return -1;
@@ -186,11 +185,16 @@ int main(int argc, char *argv[]) {
    printf("Backend API: %s\n\n", backend_api_name);
 
 // First create context and queue
-   int deviceCount = 0;
-   status = rifGetDeviceCount(backend, &deviceCount);
+   int device_count = 0;
+   status = rifGetDeviceCount(backend, &device_count);
       if (status != RIF_SUCCESS) return -1;
 
-   if (deviceCount > 0 || status) {
+   if (device_count < select_device) {
+      printf("[ERROR] non-existent device\n");
+         return -1;
+   }
+
+   if (device_count > 0 || status) {
       status = rifCreateContext(RIF_API_VERSION, backend, select_device, nullptr, &context);
          if (status != RIF_SUCCESS || !context) return -1;
    }
