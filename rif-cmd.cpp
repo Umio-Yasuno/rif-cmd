@@ -32,17 +32,15 @@ int main(int argc, char *argv[]) {
    int i, select_device = 0, quality = 0, backend = BACKEND_TYPE, filter_count = 0;
    rif_bool use_default = false;
    const rif_char *input_path = NULL, *input_ext = NULL, *output_ext = NULL;
-//  *filter_name[MAX_FILTER] = { NULL }, 
-   FILE *file_check;
+   const rif_char *output_path = "out.png";
 
    Param filter_param[MAX_FILTER];
 
-   const rif_char *output_path = "out.png";
 
    for (i=1; i < argc; i++) {
       if (!strcmp("-i", argv[i])) {
          if (++i < argc) {
-            file_check  = fopen(argv[i], "r");
+            FILE *file_check  = fopen(argv[i], "r");
 
             if (file_check) {
                input_path  = argv[i];
@@ -158,10 +156,9 @@ int main(int argc, char *argv[]) {
       return -1;
    }
 
-   rif_int              status   = RIF_SUCCESS;
-   rif_context          context  = nullptr;
-   rif_command_queue    queue    = nullptr;
-//   rif_image_filter     filter   = nullptr;
+   rif_int              status      = RIF_SUCCESS;
+   rif_context          context     = nullptr;
+   rif_command_queue    queue       = nullptr;
    rif_image            inputImage  = nullptr;
    rif_image            outputImage = nullptr;
 
@@ -317,8 +314,8 @@ for (i=0; i < filter_count; i++) {
 
       rifCommandQueueAttachImageFilter(queue, fill_filter, inputImage, outputImage);
    }
- //     rifCommandQueueAttachImageFilter(queue, nullptr, inputImage,  outputImage);
-//   rifCommandQueueAttachImageFilter(queue, filter[i], inputImage, outputImage);
+//    rifCommandQueueAttachImageFilter(queue, nullptr, inputImage,  outputImage);
+//    rifCommandQueueAttachImageFilter(queue, filter[i], inputImage, outputImage);
 }
 
 // Execute queue
