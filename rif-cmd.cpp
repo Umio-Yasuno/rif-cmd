@@ -27,25 +27,15 @@
 
 #define MAX_FILTER 9
 
-int set_param(rif_context       context,
-              const rif_char    *filter_name,
-              rif_image_filter  filter,
-              rif_image_filter  *filterptr,
-              rif_bool          use_default,
-              rif_image_desc    *output_desc);
-
-typedef struct {
-   const char* filter_name = NULL;
-   int         count_param = 0;
-   char        param_string[128];
-} filter_param;
-
 int main(int argc, char *argv[]) {
 
-   int i, select_device = 0, quality = 0, backend = BACKEND_TYPE, filter_count = 0, max_filter = MAX_FILTER;
+   int i, select_device = 0, quality = 0, backend = BACKEND_TYPE, filter_count = 0;
    rif_bool use_default = false;
-   const rif_char *input_path = NULL, *filter_name[MAX_FILTER] = { NULL }, *input_ext = NULL, *output_ext = NULL;
+   const rif_char *input_path = NULL, *input_ext = NULL, *output_ext = NULL;
+//  *filter_name[MAX_FILTER] = { NULL }, 
    FILE *file_check;
+
+   Param filter_param[MAX_FILTER];
 
    const rif_char *output_path = "out.png";
 
@@ -75,14 +65,13 @@ int main(int argc, char *argv[]) {
                return -1;
          }
       } else if (!strcmp("-f", argv[i]) || !strcmp("--filter", argv[i])) {
-         filter_param debug_param[9];
 
          if (++i < argc) {
-            if (filter_count < max_filter) {
-               debug_param[filter_count].filter_name = argv[i];
-               filter_name[filter_count] = argv[i];
+            if (filter_count < MAX_FILTER) {
+               filter_param[filter_count].filter_name = argv[i];
+            //   filter_name[filter_count] = argv[i];
             } else {
-               printf("Up to %d filters\n", max_filter);
+               printf("Up to %d filters\n", MAX_FILTER);
                return -1;
             }
          } else {
@@ -90,37 +79,23 @@ int main(int argc, char *argv[]) {
                return -1;
          }
 
-/*
-         if (++i < argc) {
-            printf("argv: %s \n", argv[i]);
-            int param_count = 0, j = 0;
-//            printf("strlen: %d\n", strlen(argv[i]));
-            int length = strlen(argv[i]);
-//            char debug[length++];
-            strncpy(debug_param[filter_count].param_string, argv[i], 127);
-//            printf("debug: %c\n", debug[4]);
-
+         if (i+1 < argc && strncmp("-", argv[i+1], 1)) {
+            i++;
+            int j = 0, length = strlen(argv[i]);
+            filter_param[filter_count].count_param = 1;
             const char *delim = ",";
-            printf("delim[0]: %c\n", delim[0]);
+
+            strncpy(filter_param[filter_count].param_string, argv[i], 127);
 
             for (j=0; j < length; j++) {
- //              printf("%c\n", debug[j]);
-               if (debug[j] == delim[0]) {
-                  param_count++;
+               if (filter_param[filter_count].param_string[j] == delim[0]) {
+                  filter_param[filter_count].count_param++;
                }
             }
-            
-            printf("paramc: %d\n", param_count);
-            char *arg_buff = strtok(argv[i], delim);
-
-            while(arg_buff != NULL) {
-               printf("buff: %s \n", arg_buff);
-               arg_buff = strtok(NULL, delim);
-            }
-*/
-            filter_count++;
+         }
+         filter_count++;
 //            return -1;
-//         }
+
       } else if (!strcmp("-d", argv[i]) || !strcmp("--default", argv[i])) {
          printf("use default value\n");
          use_default = true;
@@ -277,13 +252,21 @@ int main(int argc, char *argv[]) {
 for (i=0; i < filter_count; i++) {
 
    status = set_param(context,
-                      filter_name[i],
+                      filter_param[i],
                       filter[i],
                       &filter[i],
                       use_default,
                       &output_desc);
-   if (status != RIF_SUCCESS)
+
+   if (status != RIF_SUCCESS) {
+      printf("[ERROR] set_param function failed\n");
+      if (status == PARAM_ERROR) {
+         printf("[ERROR] There are too few or too many parameters\n"
+                "  https://github.com/Umio-Yasuno/rif-cmd/blob/main/FILTERS.md\n"
+                "  https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters.html\n");
+      }
       return -1;
+   }
 
 /*
 *  https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/info_setting_types/rif_compute_type.html
