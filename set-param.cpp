@@ -148,7 +148,7 @@ int set_param(rif_context       context,
             scanf("%f, %f%*[^\n]", &ret_param[0], &ret_param[1]);
          rifImageFilterSetParameter2f(filter, "direction", ret_param[0], ret_param[1]);
 
-      } else if (2 == filter_param.count_param) {
+      } else if (3 == filter_param.count_param) {
          rifImageFilterSetParameter1u(filter, "radius",     atoi(arg_param[0]));
          rifImageFilterSetParameter2f(filter, "direction",  atof(arg_param[1]),
                                                             atof(arg_param[2]));
