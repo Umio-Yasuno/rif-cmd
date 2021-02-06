@@ -15,24 +15,16 @@ int set_param(rif_context       context,
               rif_image_desc    *output_desc)
 {
    int i = 0;
-   printf("paramc: %d\n", filter_param.count_param);
    char *arg_param[filter_param.count_param]   = { NULL };
    char *arg_buff    = strtok(filter_param.param_string, ",");
 
    while (arg_buff != NULL) {
       arg_param[i] = arg_buff;
-   /*
-      printf("buff: %s \n"
-             "arg_param[%d]: %s\n", arg_buff, i, arg_param[i]);
-   */
       arg_buff = strtok(NULL, ",");
-//      printf("post-strtok buff: %s \n", arg_buff);
       i++;
    }
 
    if (use_default)  filter_param.count_param = 0;
-
-//   return -1;
 
 // Rotating Filters
    if (!strcmp("flip_h", filter_param.filter_name)) {
