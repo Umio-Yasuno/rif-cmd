@@ -31,7 +31,7 @@ int set_param(rif_context       context,
               rif_image_desc    *output_desc)
 {
    int i = 0;
-   char *arg_param[filter_param.count_param]   = { NULL };
+   char *arg_param[24]   = { NULL };
    char *arg_buff    = strtok(filter_param.param_string, ",");
 
    while (arg_buff != NULL) {

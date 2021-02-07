@@ -265,7 +265,7 @@ int main(int argc, char *argv[]) {
 
 // Create image filter
 // Attach filter and set parameters
-   rif_image_filter filter[filter_count] = { nullptr };
+   rif_image_filter filter[MAX_FILTER] = { nullptr };
 
 for (i=0; i < filter_count; i++) {
 
