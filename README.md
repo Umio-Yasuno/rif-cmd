@@ -3,10 +3,9 @@
 rif-cmd is a command line tool for image processing with [RadeonImageFilter](https://github.com/GPUOpen-LibrariesAndSDKs/RadeonImageFilter).  
 
 ## Build
-
 ### Ubuntu
 
-    g++ rif-cmd.cpp \ 
+    g++ rif-cmd.cpp set-param.cpp \ 
     -L./RadeonImageFilter/Ubuntu18/Dynamic/ \
     -L./RadeonImageFilter/Ubuntu18/Static/ \ 
     -lRadeonImageFilters -o rif-cmd
