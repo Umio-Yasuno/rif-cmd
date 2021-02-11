@@ -43,6 +43,20 @@
 
 #define MAX_FILTER 9
 
+static void help_print() {
+   printf("\nOPTIONS:\n"
+          "  -i <path>                     input image path\n"
+          "  -o <path>                     output image path\n"
+          "  -f, --filter <name>           filter name\n"
+          "  -q <value>                    JPEG quality [0, 100]\n"
+          "  -g, --gpu <device_id>         select device\n"
+          "  --api <api name>              Backend API (ocl/opencl, dx12, metal)\n\n"
+          "FLAGS:\n"
+          "  -d, --default                 use default parameter\n"
+          "  -h, --help                    print help\n");
+   return;
+}
+
 int main(int argc, char *argv[]) {
 
    int i, select_device = 0, quality = 0, backend = BACKEND_TYPE, filter_count = 0;
@@ -161,8 +175,12 @@ int main(int argc, char *argv[]) {
                   return -1;
             }
          }
+      } else if (!strcmp("--help", argv[i]) || !strcmp("-h", argv[i])) {
+         help_print();
+            return 0;
       } else {
          printf("Error: Unknown Option \"%s\"\n", argv[i]);
+         help_print();
             return -1;
       }
    }
