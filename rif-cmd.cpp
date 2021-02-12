@@ -27,6 +27,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+#include <sys/time.h>
 // #include <malloc.h>
 
 #include "rif-cmd.h"
@@ -287,6 +289,7 @@ int main(int argc, char *argv[]) {
 
 for (i=0; i < filter_count; i++) {
 
+   // set-param.c
    status = set_param(context,
                       filter_param[i],
                       filter[i],
@@ -354,10 +357,37 @@ for (i=0; i < filter_count; i++) {
 }
 
 // Execute queue
-//   rif_performance_statistic perf = {0};
-   status = rifContextExecuteCommandQueue(context, queue, nullptr, nullptr, nullptr);
+/*    RadeonImageFilter/RadeonImageFilters.h#L327
+ *
+ *    struct _rif_performance_statistic
+ *    {
+ *       rif_uint64 execution_time;       // nanosecond, 1 / 1e9, 1e-9
+ *       rif_bool measure_execution_time;
+ *       rif_float  compile_time;         // millsecond, 1 / 1e3, 1e-3
+ *       rif_bool measure_compile_time;
+ *    };
+*/
+
+   rif_performance_statistic perf = {0,1,0,1};
+   struct timeval start = {0}, end = {0};
+   double total_time, exe_compile_time;
+
+   gettimeofday(&start, NULL);
+
+   status = rifContextExecuteCommandQueue(context, queue, nullptr, nullptr, &perf);
       if (status != RIF_SUCCESS) return -1;
-//   printf("exe: %u\ncompile: %f\n", perf.execution_time, perf.compile_time);
+
+   gettimeofday(&end, NULL);
+
+   total_time        = (double)((end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / 1e6);
+   exe_compile_time  = (double)(perf.execution_time / 1e9 + perf.compile_time / 1e3);
+
+   printf("\nexecution time:\t\t%6.3fs\n"
+          "kernel compile time:\t%6.3fs\n"
+          "I/O time:\t\t%6.3fs\n"
+          ,(double)(perf.execution_time / 1e9)
+          ,(perf.compile_time / 1e3)
+          ,(total_time - exe_compile_time));
 
    rif_uchar *output_data;
    status = rifImageMap(outputImage, RIF_IMAGE_MAP_READ, (void**)&output_data);

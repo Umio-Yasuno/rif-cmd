@@ -44,7 +44,8 @@ int set_param(rif_context       context,
       i++;
    }
 
-   if (use_default)  filter_param.count_param = 0;
+   if (use_default)
+      filter_param.count_param = 0;
 
 // Rotating Filters
    if (!strcmp("flip_h", filter_param.filter_name)) {
