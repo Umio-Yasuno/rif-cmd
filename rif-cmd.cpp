@@ -377,6 +377,7 @@ for (i=0; i < filter_count; i++) {
    status = rifContextExecuteCommandQueue(context, queue, nullptr, nullptr, &perf);
       if (status != RIF_SUCCESS) return -1;
 
+   rifSyncronizeQueue(queue);
    gettimeofday(&end, NULL);
 
    total_time        = (double)((end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / 1e6);

@@ -700,12 +700,17 @@ int set_param(rif_context       context,
    /*
    } else if (!strcmp("ai_denoiser", filter_param.filter_name)) {
    // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/ai_denoiser.html
+   } else if (!strcmp("openimage_denoise", filter_param.filter_name)) {
+      rifContextCreateImageFilter(context,
+                                  RIF_IMAGE_FILTER_OPENIMAGE_DENOISE,
+                                  &filter);
+
    */
    } else if (!strcmp("median_denoise", filter_param.filter_name)) {
    // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/median_denoiser.html
       rifContextCreateImageFilter(context,
-                                          RIF_IMAGE_FILTER_MEDIAN_DENOISE,
-                                          &filter);
+                                  RIF_IMAGE_FILTER_MEDIAN_DENOISE,
+                                  &filter);
  
       if (!use_default && 0 == filter_param.count_param) {
          rif_uint ret_param;
