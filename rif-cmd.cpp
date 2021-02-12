@@ -383,9 +383,9 @@ for (i=0; i < filter_count; i++) {
    total_time        = (double)((end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / 1e6);
    exe_compile_time  = (double)(perf.execution_time / 1e9 + perf.compile_time / 1e3);
 
-   printf("\nexecution time:\t\t%6.3fs\n"
-          "kernel compile time:\t%6.3fs\n"
-          "I/O time:\t\t%6.3fs\n"
+   printf("\nExecution time:\t\t%6.3fs\n"
+          "Kernel compile time:\t%6.3fs\n"
+          "Other (I/O etc) time:\t%6.3fs\n"
           ,(double)(perf.execution_time / 1e9)
           ,(perf.compile_time / 1e3)
           ,(total_time - exe_compile_time));
