@@ -14,8 +14,8 @@
  *    limitations under the License.
  */
 
-#include "RadeonImageFilter/include/RadeonImageFilters.h"
-#include "RadeonImageFilter/include/RadeonImageFilters_version.h"
+#include "../RadeonImageFilter/include/RadeonImageFilters.h"
+#include "../RadeonImageFilter/include/RadeonImageFilters_version.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,12 +27,12 @@ static void err_need_param (const char *filter_name, const char *desc) {
    printf("[ERROR] %s filter parameter: \"%s\"\n", filter_name, desc);
 };
 
-int set_param(rif_context       context,
-              Param             filter_param,
-              rif_image_filter  filter,
-              rif_image_filter  *filterptr,
-              rif_bool          use_default,
-              rif_image_desc    *output_desc)
+extern int set_param(rif_context       context,
+                     Param             filter_param,
+                     rif_image_filter  filter,
+                     rif_image_filter  *filterptr,
+                     rif_bool          use_default,
+                     rif_image_desc    *output_desc)
 {
    int i = 0;
    char *arg_param[24]  = { NULL };

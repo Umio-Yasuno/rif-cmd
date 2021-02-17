@@ -1,8 +1,8 @@
 #ifndef _RIF_CMD_H_
 #define _RIF_CMD_H_
 
-#include "RadeonImageFilter/include/RadeonImageFilters.h"
-#include "RadeonImageFilter/include/RadeonImageFilters_version.h"
+#include "../RadeonImageFilter/include/RadeonImageFilters.h"
+#include "../RadeonImageFilter/include/RadeonImageFilters_version.h"
 
 #define PARAM_ERROR -3
 

@@ -14,15 +14,15 @@
  *    limitations under the License.
  */
 
-#include "RadeonImageFilter/include/RadeonImageFilters.h"
-#include "RadeonImageFilter/include/RadeonImageFilters_version.h"
+#include "../RadeonImageFilter/include/RadeonImageFilters.h"
+#include "../RadeonImageFilter/include/RadeonImageFilters_version.h"
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "RadeonImageFilter/samples/ImageTools/stb_image.h"
+#include "../RadeonImageFilter/samples/ImageTools/stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "RadeonImageFilter/samples/ImageTools/stb_image_write.h"
+#include "../RadeonImageFilter/samples/ImageTools/stb_image_write.h"
 
-#include "RadeonImageFilter/samples/ImageTools/ImageTools.h"
+#include "../RadeonImageFilter/samples/ImageTools/ImageTools.h"
 
 #include <stdio.h>
 #include <stdlib.h>
