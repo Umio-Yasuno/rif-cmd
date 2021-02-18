@@ -105,6 +105,8 @@ extern int set_param(rif_context       context,
       } else if (2 == filter_param.count_param) {
          rifImageFilterSetParameter1u(filter,     "mode",      atoi(arg_param[0]));
          rifImageFilterSetParameterString(filter, "modelPath", arg_param[1]);
+      } else if (use_default) {
+         //
       } else {
          err_need_param(filter_param.filter_name, "<mode (int)(1: Good, 2: Best, 3: Fast)>,<path>");
          return PARAM_ERROR;
@@ -136,6 +138,9 @@ extern int set_param(rif_context       context,
          rifImageFilterSetParameter1u(filter, "radius",  atoi(arg_param[0]));
          rifImageFilterSetParameter1f(filter, "sigma",   atof(arg_param[1]));
          rifImageFilterSetParameter1u(filter, "tiling",  atoi(arg_param[2]));
+
+      } else if (use_default) {
+         //
       } else {
          err_need_param(filter_param.filter_name, "<radius (int)(0_50)>,<sigma (int)>,<tiling (bool)(0: false, 1: true)>");
          return PARAM_ERROR;
@@ -169,6 +174,8 @@ extern int set_param(rif_context       context,
          rifImageFilterSetParameter1u(filter, "radius",     atoi(arg_param[0]));
          rifImageFilterSetParameter2f(filter, "direction",  atof(arg_param[1]),
                                                             atof(arg_param[2]));
+      } else if (use_default) {
+         //
       } else {
          err_need_param(filter_param.filter_name, "<radius (int)(0_50)>,<motion direction (float)>,<motion direction (float)>");
          return PARAM_ERROR;
@@ -199,6 +206,9 @@ extern int set_param(rif_context       context,
       } else if (2 == filter_param.count_param) {
          rifImageFilterSetParameter1u(filter, "interpOperator", atoi(arg_param[0]));
          ret_scale = atof(arg_param[1]);
+
+      } else if (use_default) {
+         //
       } else {
          err_need_param(filter_param.filter_name, "<interpOperator (int)(0: Nearest, 1: Bilinear, 2: Bicubic, 3: Lanczos)><scale (float)>");
          return PARAM_ERROR;
@@ -258,6 +268,8 @@ extern int set_param(rif_context       context,
          ret_scale = atof(arg_param[1]);
          rifImageFilterSetParameter1f(filter, "sharpness",        atof(arg_param[1]));
 
+      } else if (use_default) {
+         //
       } else {
          printf("[ERROR] dynamic_resample filter parameter: <interpOperator (int(\n"
                 "    [0]: Lanczos4,                    [1]: Lanczos6\n"
@@ -315,6 +327,8 @@ extern int set_param(rif_context       context,
          rifImageFilterSetParameter1f(filter, ret_param_name[1],  atof(arg_param[1]));
          rifImageFilterSetParameter1u(filter, "applyToneMap",     atoi(arg_param[2]));
 
+      } else if (use_default) {
+         //
       } else {
          err_need_param(filter_param.filter_name, "<exposure (int)(0_100)>,<contrast (int)(0_10)><applyToneMap (bool)(0: false, 1: true)>");
          return PARAM_ERROR;
@@ -337,6 +351,8 @@ extern int set_param(rif_context       context,
       } else if (1 == filter_param.count_param) {
          rifImageFilterSetParameter1f(filter, "gamma", atof(arg_param[0]));
 
+      } else if (use_default) {
+         //
       } else {
          return PARAM_ERROR;
       }
@@ -371,6 +387,8 @@ extern int set_param(rif_context       context,
          rifImageFilterSetParameter1u(filter, ret_src[0], atoi(arg_param[0]));
          rifImageFilterSetParameter1u(filter, ret_src[1], atoi(arg_param[1]));
 
+      } else if (use_default) {
+         //
       } else {
          return PARAM_ERROR;
       }
@@ -400,6 +418,9 @@ extern int set_param(rif_context       context,
          for (i=0; i < 3; i++) {
             rifImageFilterSetParameter1f(filter, ret_param_name[i], atof(arg_param[i]));
          }
+
+      } else if (use_default) {
+         //
       } else {
          err_need_param(filter_param.filter_name, "<bias (int)>,<avLum (int)>,<maxLum (int)>");
          return PARAM_ERROR;
@@ -432,6 +453,9 @@ extern int set_param(rif_context       context,
          for (i=0; i < 3; i++) {
             rifImageFilterSetParameter1f(filter, ret_param_name[i], atof(arg_param[i]));
          }
+
+      } else if (use_default) {
+         //
       } else {
          err_need_param(filter_param.filter_name, "<gamma (float)(0_50)>,<exposure (float)(-10_10)>,<intensity (float)(0_100)>");
          return PARAM_ERROR;
@@ -470,6 +494,9 @@ extern int set_param(rif_context       context,
          for (i=0; i < 9; i++) {
             rifImageFilterSetParameter1f(filter, ret_param_name[i], atof(arg_param[i]));
          }
+
+      } else if (use_default) {
+         //
       } else {
          err_need_param(filter_param.filter_name, "<shoulder strength (float)(0_1)>,<linear strength (float)(0_1)>,<linear angle (float)(0_1)>,<toe strength(float)(0_2)>,<toe numerator (float)(0_1)>,<toe denominator (float)(0_1)>,<white (float)(1_20)>,<exposure (float)(-10_10)>,<gamma (float)(0_5)>");
          return PARAM_ERROR;
@@ -493,6 +520,8 @@ extern int set_param(rif_context       context,
       } else if (1 == filter_param.count_param) {
          rifImageFilterSetParameter1f(filter, "gamma", atof(arg_param[0]));
 
+      } else if (use_default) {
+         //
       } else {
          err_need_param(filter_param.filter_name, "<gamma (float)(0_5)>");
          return PARAM_ERROR;
@@ -524,6 +553,9 @@ extern int set_param(rif_context       context,
          for (i=0; i < 3; i++) {
             rifImageFilterSetParameter1f(filter, ret_param_name[i], atof(arg_param[i]));
          }
+
+      } else if (use_default) {
+         //
       } else {
          err_need_param(filter_param.filter_name, "<saturation (float)>,<hue (float)(-180_180)>,<brightness (float)>");
          return PARAM_ERROR;
@@ -557,6 +589,9 @@ extern int set_param(rif_context       context,
          for (i=0; i < 4; i++) {
             rifImageFilterSetParameter1f(filter, ret_param_name[i], atof(arg_param[i]));
          }
+
+      } else if (use_default) {
+         //
       } else {
          err_need_param(filter_param.filter_name, "<gamma (float)(0_5)>,<exposureTime (float)(0_100)>,<sensitivity (float)(0_100)>,<fstop (float)(0_100)>");
          return PARAM_ERROR;
@@ -579,6 +614,9 @@ extern int set_param(rif_context       context,
       } else if (1 == filter_param.count_param) {
          rifImageFilterSetParameter1f(filter, "key", atof(arg_param[0]));
 
+
+      } else if (use_default) {
+         //
       } else {
          err_need_param(filter_param.filter_name, "<linear coefficient (float)(0_10000)>");
          return PARAM_ERROR;
@@ -661,6 +699,8 @@ extern int set_param(rif_context       context,
 
          rifImageFilterSetParameter1u(filter,   "useISO",      atoi(arg_param[15]));
 
+      } else if (use_default) {
+         //
       } else {
          err_need_param(filter_param.filter_name, "<gamma (float)>,<exposureTime (float)>,<sensitivity (float)>,<fstop (float)>,<focalL (float)>,<vignette (float)>,<saturation (float)>,<lighten (float)>,<darken (float)>,<ISO (int)>,<useclampN (int)(0: false, 1: true)>,<whitepoint0 (float)>,<whitepoint1 (float)>,<whitepoint2 (float)>,<whitepoint3 (float)>,<useISO (int)(0: false, 1: true)>");
          return PARAM_ERROR;
@@ -693,6 +733,8 @@ extern int set_param(rif_context       context,
         for (i=0; i < 4; i++) {
             rifImageFilterSetParameter1f(filter, ret_param_name[i], atof(arg_param[i]));
          }
+      } else if (use_default) {
+         //
       } else {
          err_need_param(filter_param.filter_name, "<gamma (float)(0_5)>,<preScale (float)(0_10)>,<postScale (float)(0_10)>,<burn (float)(0_10)>");
          return PARAM_ERROR;
@@ -723,6 +765,8 @@ extern int set_param(rif_context       context,
       } else if (1 == filter_param.count_param) {
          rifImageFilterSetParameter1u(filter, "radius", atoi(arg_param[0]));
 
+      } else if (use_default) {
+         //
       } else {
          err_need_param(filter_param.filter_name, "<radius (int)(0_50)>");
          return PARAM_ERROR;
@@ -756,6 +800,8 @@ extern int set_param(rif_context       context,
       } else if (1 == filter_param.count_param) {
          rifImageFilterSetParameter1f(filter, "sharpness", atof(arg_param[0]));
 
+      } else if (use_default) {
+         //
       } else {
          err_need_param(filter_param.filter_name, "<sharpness (float)>");
          return PARAM_ERROR;
@@ -770,6 +816,8 @@ extern int set_param(rif_context       context,
       if (1 == filter_param.count_param) {
          rifImageFilterSetParameterString(filter, "modelPath", arg_param[0]);
 
+      } else if (use_default) {
+         //
       } else {
          rif_char ret_model_path[128];
          printf("Path to machine learning model file : ");
@@ -811,6 +859,8 @@ extern int set_param(rif_context       context,
          for (i=0; i < 4; i++) {
             rifImageFilterSetParameter1f(filter, ret_param_name[i], atof(arg_param[i]));
          }
+      } else if (use_default) {
+         //
       } else {
          err_need_param(filter_param.filter_name, "<radius (float)(0.01_1)>,<threshold (float)>,<weight (float)>,<decay (float)>");
          return PARAM_ERROR;;
@@ -840,6 +890,8 @@ extern int set_param(rif_context       context,
       } else if (1 == filter_param.count_param) {
          rifImageFilterSetParameter1u(filter, "mode", atoi(arg_param[0]));
 
+      } else if (use_default) {
+         //
       } else {
          err_need_param(filter_param.filter_name, "<mode (int)(0: Dilate, 1: Erode)>");
          return PARAM_ERROR;
@@ -862,6 +914,8 @@ extern int set_param(rif_context       context,
       } else if (1 == filter_param.count_param) {
          rifImageFilterSetParameter1u(filter, "radius", atoi(arg_param[0]));
 
+      } else if (use_default) {
+         //
       } else {
          err_need_param(filter_param.filter_name, "<radius (int)(0_50)>");
          return PARAM_ERROR;
@@ -913,6 +967,8 @@ extern int set_param(rif_context       context,
       } else if (1 == filter_param.count_param) {
          rifImageFilterSetParameter1u(filter, "levels", atoi(arg_param[0]));
 
+      } else if (use_default) {
+         //
       } else {
          err_need_param(filter_param.filter_name, "<levels (int)>");
          return PARAM_ERROR;
@@ -954,6 +1010,8 @@ extern int set_param(rif_context       context,
          for (i=0; i < 4; i++) {
             rifImageFilterSetParameter1f(filter, ret_param_name[i], atof(arg_param[i]));
          }
+      } else if (use_default) {
+         //
       } else {
          err_need_param(filter_param.filter_name, "<srcRangeAuto (bool)(0: false, 1: true)>\nor <min input range (int)>,<max input range (int)>,<min output range (int)>,<max output range (int)>");
          return PARAM_ERROR;
@@ -976,6 +1034,8 @@ extern int set_param(rif_context       context,
       } else if (1 == filter_param.count_param) {
          rifImageFilterSetParameter1f(filter, "level", atof(arg_param[0]));
 
+      } else if (use_default) {
+         //
       } else {
          err_need_param(filter_param.filter_name, "<level (float)(0_50)>");
          return PARAM_ERROR;
@@ -998,6 +1058,8 @@ extern int set_param(rif_context       context,
       } else if (2 == filter_param.count_param) {
          rifImageFilterSetParameter2u(filter, "offsets", atoi(arg_param[0]), atoi(arg_param[1]));
 
+      } else if (use_default) {
+         //
       } else {
          err_need_param(filter_param.filter_name, "<offsets x (int)>,<offsets y (int)>");
          return PARAM_ERROR;
