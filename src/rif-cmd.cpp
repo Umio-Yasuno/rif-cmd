@@ -237,23 +237,23 @@ int main(int argc, char *argv[]) {
       if (status != RIF_SUCCESS || !queue) return -1;
 
 // Create input and output images
-
 /*
    rif_image_desc input_desc;
-   memset(&input_desc, 0, sizeof(input_desc));
+//   memset(&input_desc, 0, sizeof(input_desc));
 
    rif_int width, height, num_comp;
    rif_float *data = nullptr;
    rif_uchar *raw_data = stbi_load(input_path, &width, &height, &num_comp, 3);
 
    int array_size  = width * height * num_comp;
+   printf("array_size: %d\n", array_size);
    data = (rif_float*) malloc(array_size * sizeof(rif_float) + 1);
 
    for (i=0; i < array_size; i++) {
 //      printf("%f", (rif_float)raw_data[i]);
       data[i] = (rif_float)raw_data[i];
    }
-      return -1;
+//      return -1;
 
    printf("w: %d, h: %d, comp: %d\n", width, height, num_comp);
 //      return -1;
@@ -264,8 +264,8 @@ int main(int argc, char *argv[]) {
    input_desc.type               =  RIF_COMPONENT_TYPE_FLOAT32;
    
    rifContextCreateImage(context, &input_desc, data, &inputImage);
-      free(data);
-      data = nullptr;
+//      free(data);
+//      data = nullptr;
 
 */
 
@@ -369,7 +369,7 @@ for (i=0; i < filter_count; i++) {
 */
 
    rif_performance_statistic perf = {0,1,0,1};
-   struct timeval start = {0}, end = {0};
+   struct timeval start = {0,0}, end = {0,0};
    double total_time, exe_compile_time;
 
    gettimeofday(&start, NULL);
