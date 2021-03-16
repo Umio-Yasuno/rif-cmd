@@ -151,12 +151,14 @@ extern int set_param(rif_context       context,
       rifContextCreateImageFilter(context,
                                   RIF_IMAGE_FILTER_MOTION_BLUR,
                                   &filter);
+      #if RIF_VERSION_MINOR <= 6
       /*
        *    RIF 1.6.2 workaround
        *    https://github.com/GPUOpen-LibrariesAndSDKs/RadeonImageFilter/issues/8
        */
          rifImageFilterSetParameter1u(filter, "radius", 4u);
          rifImageFilterSetParameter1u(filter, "radius", 5u);
+      #endif
 
       if (!use_default && 0 == filter_param.count_param) {
          rif_uint    ret_radius;
