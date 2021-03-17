@@ -61,7 +61,7 @@
 | Bilateral Denoiser Filter             | *not yet implemented* <!-- bilateral_denoise -->    | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/bilateral_denoiser.html) |
 | Edge-avoiding À-Trous Wavelet Filter  | *not yet implemented* <!-- eaw_denoise -->          | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/edge_avoiding_wavelet.html) |
 | Local Weighted Regression Filter      | *not yet implemented* <!-- eaw_denoise -->          | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/local_weighted_regression.html) |
-| Median Denoiser Filter               | median_denoise | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/median_denoiser.html) |
+| Median Denoiser Filter               | "median_denoise" | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/median_denoiser.html) |
 | Temporal Accumulation Filter         | *not yet implemented* <!-- median_denoise -->       | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/temporal_accumulation.html)
 
 

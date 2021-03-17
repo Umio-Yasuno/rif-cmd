@@ -294,7 +294,7 @@ for (i=0; i < filter_count; i++) {
 
    // set-param.c
    status = set_param(context,
-                      filter_param[i],
+                      &filter_param[i],
                       filter[i],
                       &filter[i],
                       use_default,
@@ -432,7 +432,8 @@ if (!strcmp(".jpg", output_ext) || !strcmp(".jpeg", output_ext)) {
                            output_desc.num_components,
                            output_data, 0);
 }
-/*
+
+#if 0
    status = ImageTools::SaveImage(outputImage, output_path);
       if (status) {
          printf("\nSuccess\n");
@@ -440,7 +441,7 @@ if (!strcmp(".jpg", output_ext) || !strcmp(".jpeg", output_ext)) {
          printf("\nError: output image\n");
          return -1;
       }
-*/
+#endif
 
    if (status) {
       printf("\nSuccess: %s\n", output_path);

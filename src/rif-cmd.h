@@ -13,7 +13,7 @@ typedef struct {
 } Param;
 
 int set_param(rif_context       context,
-              Param             filter_param,
+              Param             *filter_param,
               rif_image_filter  filter,
               rif_image_filter  *filterptr,
               rif_bool          use_default,
