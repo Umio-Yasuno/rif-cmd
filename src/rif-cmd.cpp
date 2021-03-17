@@ -62,7 +62,7 @@ static void help_print() {
 int main(int argc, char *argv[]) {
 
    int i, select_device = 0, quality = 0, backend = BACKEND_TYPE, filter_count = 0;
-   rif_bool use_default = false;
+   rif_bool use_default = false, perf_output = false;
    const rif_char *input_path = NULL, *input_ext = NULL, *output_ext = NULL;
    const rif_char *output_path = "out.png";
 
@@ -131,6 +131,9 @@ int main(int argc, char *argv[]) {
          printf("use default value\n");
          use_default = true;
 
+      } else if (!strcmp("--perf", argv[i])) {
+         perf_output = true;
+         
       } else if (!strcmp("-v", argv[i]) || !strcmp("--version", argv[i])) {
          printf("rif-cmd version: 0.0.0\n");
          printf("RIF API version: %s\n", RIF_API_VERSION_STRING);
@@ -364,34 +367,40 @@ for (i=0; i < filter_count; i++) {
  *    {
  *       rif_uint64 execution_time;       // nanosecond, 1 / 1e9, 1e-9
  *       rif_bool measure_execution_time;
- *       rif_float  compile_time;         // millsecond, 1 / 1e3, 1e-3
+ *       rif_float  compile_time;         // millisecond, 1 / 1e3, 1e-3
  *       rif_bool measure_compile_time;
  *    };
 */
 
-   rif_performance_statistic perf = {0,1,0,1};
-   struct timeval start = {0,0}, end = {0,0};
-   double total_time, exe_compile_time;
+   if (perf_output) {
+      rif_performance_statistic perf = {0,1,0,1};
+      struct timeval start = {0,0}, end = {0,0};
+      double total_time, exe_compile_time;
 
-   gettimeofday(&start, NULL);
+      gettimeofday(&start, NULL);
 
-   status = rifContextExecuteCommandQueue(context, queue, nullptr, nullptr, &perf);
-      if (status != RIF_SUCCESS) return -1;
+      status = rifContextExecuteCommandQueue(context, queue, nullptr, nullptr, &perf);
+         if (status != RIF_SUCCESS) return -1;
 
-   rifSyncronizeQueue(queue);
-   gettimeofday(&end, NULL);
+      rifSyncronizeQueue(queue);
+      gettimeofday(&end, NULL);
 
-   total_time        = (double)((end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / 1e6);
-   exe_compile_time  = (double)(perf.execution_time / 1e9 + perf.compile_time / 1e3);
+      total_time        = (double)((end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / 1e6);
+      exe_compile_time  = (double)(perf.execution_time / 1e9 + perf.compile_time / 1e3);
 
-   printf("\nExecution time:\t\t%6.3fs\n"
-          "Kernel compile time:\t%6.3fs\n"
-          "Other (I/O etc) time:\t%6.3fs\n"
-          ,(double)(perf.execution_time / 1e9)
-          ,(perf.compile_time / 1e3)
-          ,(total_time - exe_compile_time));
+      printf("\nExecution time:\t\t%6.3fs\n"
+             "Kernel compile time:\t%6.3fs\n"
+             "Other (I/O etc) time:\t%6.3fs\n"
+             ,(double)(perf.execution_time / 1e9)
+             ,(perf.compile_time / 1e3)
+             ,(total_time - exe_compile_time));
+   } else {
+      status = rifContextExecuteCommandQueue(context, queue, nullptr, nullptr, nullptr);
+         if (status != RIF_SUCCESS) return -1;
+   }
 
    rif_uchar *output_data;
+
    status = rifImageMap(outputImage, RIF_IMAGE_MAP_READ, (void**)&output_data);
       if (status != RIF_SUCCESS) return -1;
 
