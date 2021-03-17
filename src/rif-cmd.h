@@ -17,6 +17,7 @@ int set_param(rif_context       context,
               rif_image_filter  filter,
               rif_image_filter  *filterptr,
               rif_bool          use_default,
+              rif_image         *outputImage,
               rif_image_desc    *output_desc);
 
 #endif  // _RIF_CMD_H_  

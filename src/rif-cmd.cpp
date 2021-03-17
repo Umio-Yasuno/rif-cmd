@@ -295,6 +295,7 @@ for (i=0; i < filter_count; i++) {
                       filter[i],
                       &filter[i],
                       use_default,
+                      &outputImage,
                       &output_desc);
 
    if (status != RIF_SUCCESS) {
