@@ -753,7 +753,7 @@ extern int set_param(rif_context       context,
    */
    } else if (!strcmp("median_denoise", filter_param->filter_name)) {
    // https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/median_denoiser.html
-      printf("Median Denoiser Filter is heavy workload.\n");
+      printf("Median Denoiser Filter is heavy workload!\n");
 
       rifContextCreateImageFilter(context,
                                   RIF_IMAGE_FILTER_MEDIAN_DENOISE,

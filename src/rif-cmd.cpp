@@ -45,6 +45,29 @@
 
 #define MAX_FILTER 9
 
+static void api_backend_print(int backend) {
+
+   rif_char backend_api_name[16];
+
+   switch (backend) {
+      case RIF_BACKEND_API_OPENCL:
+         strcpy(backend_api_name, "OpenCL");
+         break;
+      case RIF_BACKEND_API_DIRECTX12: 
+         strcpy(backend_api_name, "DirectX12");
+         break;
+      case RIF_BACKEND_API_METAL:
+         strcpy(backend_api_name, "Metal");
+         break;
+      default:
+         strcpy(backend_api_name, "Unknown");
+         break;
+   }
+
+   printf("Backend API: %s\n\n", backend_api_name);
+   return;
+}
+
 static void help_print() {
    printf("\nOPTIONS:\n"
           "  -i <path>                     input image path\n"
@@ -63,11 +86,9 @@ int main(int argc, char *argv[]) {
 
    int i, select_device = 0, quality = 0, backend = BACKEND_TYPE, filter_count = 0;
    rif_bool use_default = false, perf_output = false;
-   const rif_char *input_path = NULL, *input_ext = NULL, *output_ext = NULL;
-   const rif_char *output_path = "out.png";
+   const rif_char *input_path = NULL, *input_ext = NULL, *output_ext = NULL, *output_path = "out.png";
 
    Param filter_param[MAX_FILTER];
-
 
    for (i=1; i < argc; i++) {
       if (!strcmp("-i", argv[i])) {
@@ -202,24 +223,7 @@ int main(int argc, char *argv[]) {
    rif_image            inputImage  = nullptr;
    rif_image            outputImage = nullptr;
 
-   rif_char backend_api_name[16];
-
-   switch (backend) {
-      case RIF_BACKEND_API_OPENCL:
-         strcpy(backend_api_name, "OpenCL");
-         break;
-      case RIF_BACKEND_API_DIRECTX12: 
-         strcpy(backend_api_name, "DirectX12");
-         break;
-      case RIF_BACKEND_API_METAL:
-         strcpy(backend_api_name, "Metal");
-         break;
-      default:
-         strcpy(backend_api_name, "Unknown");
-         break;
-   }
-
-   printf("Backend API: %s\n\n", backend_api_name);
+   api_backend_print(backend);
 
 // First create context and queue
    int device_count = 0;
@@ -280,8 +284,9 @@ int main(int argc, char *argv[]) {
 
    rifImageGetInfo(inputImage, RIF_IMAGE_DESC, sizeof(output_desc), &output_desc, &retSize);
 
-   if (!strcmp(".jpg", input_ext) || !strcmp(".jpeg", input_ext))
+   if (!strcmp(".jpg", input_ext) || !strcmp(".jpeg", input_ext)) {
       output_desc.type = RIF_COMPONENT_TYPE_UINT8;
+   }
 
    status = rifContextCreateImage(context, &output_desc, nullptr, &outputImage);
       if (status != RIF_SUCCESS) return -1;
@@ -312,12 +317,12 @@ for (i=0; i < filter_count; i++) {
    }
 
 /*
-*  https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/info_setting_types/rif_compute_type.html
-*  RIF_COMPUTE_TYPE_FLOAT  0x0
-*  RIF_COMPUTE_TYPE_HALF   0x1
-*  https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/api/rifimagefiltersetcomputetype.html
-*  rifImageFilterSetComputeType(filter, RIF_COMPUTE_TYPE_FLOAT);
-*/
+ *    https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/info_setting_types/rif_compute_type.html
+ *    RIF_COMPUTE_TYPE_FLOAT  0x0
+ *    RIF_COMPUTE_TYPE_HALF   0x1
+ *    https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/api/rifimagefiltersetcomputetype.html
+ *    rifImageFilterSetComputeType(filter, RIF_COMPUTE_TYPE_FLOAT);
+ */
 /*
  *    https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/combining_filters.html
  *
@@ -370,7 +375,7 @@ for (i=0; i < filter_count; i++) {
  *       rif_float  compile_time;         // millisecond, 1 / 1e3, 1e-3
  *       rif_bool measure_compile_time;
  *    };
-*/
+ */
 
    if (perf_output) {
       rif_performance_statistic perf = {0,1,0,1};
