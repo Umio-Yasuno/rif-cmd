@@ -76,9 +76,12 @@ static void help_print() {
           "  -q <value>                    JPEG quality [0, 100]\n"
           "  -g, --gpu <device_id>         select device\n"
           "  --api <api name>              Backend API (ocl/opencl, dx12, metal)\n\n"
-          "FLAGS:\n"
+          "  --trace <dir>                 RIF tracing for debugging\n"
+          "      <https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/tracing.html>\n"
+          "\nFLAGS:\n"
           "  -d, --default                 use default parameter\n"
-          "  -h, --help                    print help\n");
+          "  --perf                        outputs performance statistic time\n"
+          "  -h, --help                    print help\n\n");
    return;
 }
 

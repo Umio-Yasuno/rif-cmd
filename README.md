@@ -3,12 +3,11 @@
 rif-cmd is a command line tool for image processing with [RadeonImageFilter](https://github.com/GPUOpen-LibrariesAndSDKs/RadeonImageFilter).  
 
 ## Build
-### Ubuntu
 
-    g++ ./src/rif-cmd.cpp ./src/set-param.cpp \ 
-    -L./RadeonImageFilter/Ubuntu18/Dynamic/ \
-    -L./RadeonImageFilter/Ubuntu18/Static/ \ 
-    -lRadeonImageFilters -o rif-cmd
+    mkdir build
+    cd build
+    cmake ../
+    make
     
 ## Usage
 ### Ubuntu
@@ -24,8 +23,13 @@ OPTIONS:
   -g, --gpu <device_id>         select device
   --api <api name>              Backend API (ocl/opencl, dx12, metal)
 
+  --trace <dir>                 RIF tracing for debugging
+      <https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/tracing.html>
+
 FLAGS:
   -d, --default                 use default parameter
+  --perf                        outputs performance statistic time
+  -h, --help                    print help
 
 ```
 
