@@ -38,8 +38,8 @@ extern int set_param(rif_context       context,
                      rif_image_desc    *output_desc)
 {
    int i = 0;
-   char *arg_param[24]  = { NULL };
-   char *arg_buff       = strtok(filter_param->param_string, ",");
+   const char *arg_param[24]  = { NULL };
+   const char *arg_buff       = strtok(filter_param->param_string, ",");
 
    while (arg_buff != NULL) {
       arg_param[i] = arg_buff;
@@ -47,8 +47,7 @@ extern int set_param(rif_context       context,
       i++;
    }
 
-   if (use_default)
-      filter_param->count_param = 0;
+   if (use_default) filter_param->count_param = 0;
 
 // Rotating Filters
    if (!strcmp("flip_h", filter_param->filter_name)) {

@@ -4,3 +4,4 @@ input/
 output/
 kernelsCache/
 *\.o
+*build/
