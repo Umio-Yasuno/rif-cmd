@@ -47,24 +47,25 @@
 
 
 static void api_backend_print(int backend) {
-   const char *backend_api_name;
+   char api_name[16];
+   size_t ret = sizeof(api_name);
 
    switch (backend) {
       case RIF_BACKEND_API_OPENCL:
-         backend_api_name = "OpenCL";
+         strncpy(api_name, "OpenCL",  ret);
          break;
       case RIF_BACKEND_API_DIRECTX12: 
-         backend_api_name = "DirectX12";
+         strncpy(api_name, "DX12",    ret);
          break;
       case RIF_BACKEND_API_METAL:
-         backend_api_name = "Metal";
+         strncpy(api_name, "Metal",   ret);
          break;
       default:
-         backend_api_name = "Unknown";
+         strncpy(api_name, "Unknown", ret);
          break;
    }
 
-   printf("Backend API: \t %s\n", backend_api_name);
+   printf("Backend API: \t %s\n", api_name);
    return;
 }
 
@@ -155,7 +156,7 @@ int main(int argc, char *argv[]) {
             i++;
             int j = 0, length = strlen(argv[i]);
             filter_param[filter_count].count_param = 1;
-            const char *delim = ",";
+            char delim[] = ",";
 
             strncpy(filter_param[filter_count].param_string, argv[i], 127);
 
