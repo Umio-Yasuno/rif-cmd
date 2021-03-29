@@ -45,26 +45,42 @@
 
 #define MAX_FILTER 9
 
-static void api_backend_print(int backend) {
 
-   rif_char backend_api_name[16];
+static void api_backend_print(int backend) {
+   const char *backend_api_name;
 
    switch (backend) {
       case RIF_BACKEND_API_OPENCL:
-         strcpy(backend_api_name, "OpenCL");
+         backend_api_name = "OpenCL";
          break;
       case RIF_BACKEND_API_DIRECTX12: 
-         strcpy(backend_api_name, "DirectX12");
+         backend_api_name = "DirectX12";
          break;
       case RIF_BACKEND_API_METAL:
-         strcpy(backend_api_name, "Metal");
+         backend_api_name = "Metal";
          break;
       default:
-         strcpy(backend_api_name, "Unknown");
+         backend_api_name = "Unknown";
          break;
    }
 
-   printf("Backend API: %s\n\n", backend_api_name);
+   printf("Backend API: \t %s\n", backend_api_name);
+   return;
+}
+
+static void get_device_info(int backend, int deviceid) {
+   char clinfo[128], d_name[128], vendor[128];
+   size_t ret;
+
+   rifGetDeviceInfo(backend, deviceid, RIF_DEVICE_NAME, 
+                     sizeof(d_name), &d_name, &ret);
+   rifGetDeviceInfo(backend, deviceid, RIF_DEVICE_VENDOR, 
+                     sizeof(vendor), &vendor, &ret);
+
+   printf("Vendor: \t %s\n"
+          "Device Name: \t %s\n\n",
+          vendor, d_name);
+
    return;
 }
 
@@ -84,6 +100,7 @@ static void help_print() {
           "  -h, --help                    print help\n\n");
    return;
 }
+
 
 int main(int argc, char *argv[]) {
 
@@ -227,6 +244,7 @@ int main(int argc, char *argv[]) {
    rif_image            outputImage = nullptr;
 
    api_backend_print(backend);
+   get_device_info(backend, select_device);
 
 // First create context and queue
    int device_count = 0;
