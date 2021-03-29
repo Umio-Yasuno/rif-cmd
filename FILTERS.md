@@ -103,7 +103,7 @@
 | BGRA TO RGBA Conversion Filter    | "bgra_to_rgba"                        | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/bgra_to_rgba_conversion.html) |
 | Binary Operation Filter           | *not yet implemented* <!-- binary_op -->| [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/binary_operation.html) |
 | Bloom Filter                      | "bloom"                               | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/bloom.html) |
-| Convert Filter                    | *not yet implemented* <!-- convert -->  | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/convert.html) |
+| Convert Filter                    | "" <!-- convert -->  | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/convert.html) |
 | Dilate (Erode) Filter             | "dilate_erode"                        | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/dilate.html) |
 | Emboss Filter                     | "emboss"                              | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/emboss.html) |
 | Motion Buffer Filter              | *not yet implemented* <!-- motion_buffer --> | [LINK](https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters/motion_buffer.html) |
