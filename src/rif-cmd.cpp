@@ -102,6 +102,33 @@ static void help_print() {
    return;
 }
 
+static void exe_perf(rif_context ctx, rif_command_queue queue) {
+   uint8_t status = 0;
+   rif_performance_statistic perf = {0,1,0,1};
+   struct timeval start = {0,0}, end = {0,0};
+   double total_time, exe_compile_time;
+
+   gettimeofday(&start, NULL);
+
+   status = rifContextExecuteCommandQueue(ctx, queue, nullptr, nullptr, &perf);
+      if (status != RIF_SUCCESS) return -1;
+
+   rifSyncronizeQueue(queue);
+   gettimeofday(&end, NULL);
+
+   total_time        = (double)((end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / 1e6);
+   exe_compile_time  = (double)(perf.execution_time / 1e9 + perf.compile_time / 1e3);
+
+   printf("\nExecution time:\t\t%6.3fs\n"
+          "Kernel compile time:\t%6.3fs\n"
+          "Other (I/O etc) time:\t%6.3fs\n"
+          ,(double)(perf.execution_time / 1e9)
+          ,(perf.compile_time / 1e3)
+          ,(total_time - exe_compile_time));
+
+   return;
+}
+
 
 int main(int argc, char *argv[]) {
 
@@ -266,7 +293,7 @@ int main(int argc, char *argv[]) {
       if (status != RIF_SUCCESS || !queue) return -1;
 
 // Create input and output images
-/*
+#if 0
    rif_image_desc input_desc;
 //   memset(&input_desc, 0, sizeof(input_desc));
 
@@ -295,8 +322,7 @@ int main(int argc, char *argv[]) {
    rifContextCreateImage(context, &input_desc, data, &inputImage);
 //      free(data);
 //      data = nullptr;
-
-*/
+#endif
 
    inputImage = ImageTools::LoadImage(input_path, context);
 
@@ -383,7 +409,7 @@ int main(int argc, char *argv[]) {
       }
    //    rifCommandQueueAttachImageFilter(queue, nullptr, inputImage,  outputImage);
    //    rifCommandQueueAttachImageFilter(queue, filter[i], inputImage, outputImage);
-   }// set filter parm loop
+   } // set filter parm loop
 
 /* Execute queue
  *    RadeonImageFilter/RadeonImageFilters.h#L327
@@ -397,27 +423,8 @@ int main(int argc, char *argv[]) {
  *    };
  */
    if (perf_output) {
-      rif_performance_statistic perf = {0,1,0,1};
-      struct timeval start = {0,0}, end = {0,0};
-      double total_time, exe_compile_time;
+      exe_perf(context, queue);
 
-      gettimeofday(&start, NULL);
-
-      status = rifContextExecuteCommandQueue(context, queue, nullptr, nullptr, &perf);
-         if (status != RIF_SUCCESS) return -1;
-
-      rifSyncronizeQueue(queue);
-      gettimeofday(&end, NULL);
-
-      total_time        = (double)((end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / 1e6);
-      exe_compile_time  = (double)(perf.execution_time / 1e9 + perf.compile_time / 1e3);
-
-      printf("\nExecution time:\t\t%6.3fs\n"
-             "Kernel compile time:\t%6.3fs\n"
-             "Other (I/O etc) time:\t%6.3fs\n"
-             ,(double)(perf.execution_time / 1e9)
-             ,(perf.compile_time / 1e3)
-             ,(total_time - exe_compile_time));
    } else {
       status = rifContextExecuteCommandQueue(context, queue, nullptr, nullptr, nullptr);
          if (status != RIF_SUCCESS) return -1;
@@ -429,7 +436,8 @@ int main(int argc, char *argv[]) {
       if (status != RIF_SUCCESS) return -1;
 
 if (!strcmp(".jpg", output_ext) || !strcmp(".jpeg", output_ext)) {
-/*     int stbi_write_jpg(char const *filename,
+/*
+ *     int stbi_write_jpg(char const *filename,
  *                        int w,
  *                        int h,
  *                        int comp,
@@ -442,7 +450,8 @@ if (!strcmp(".jpg", output_ext) || !strcmp(".jpeg", output_ext)) {
                            output_data, quality);
 
 } else if (!strcmp(".png", output_ext)) {
-/*    int stbi_write_png(char const *filename,
+/*
+ *    int stbi_write_png(char const *filename,
  *                       int w,
  *                       int h,
  *                       int comp,
