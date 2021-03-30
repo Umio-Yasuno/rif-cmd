@@ -317,26 +317,25 @@ int main(int argc, char *argv[]) {
 // Attach filter and set parameters
    rif_image_filter filter[MAX_FILTER] = { nullptr };
 
-for (i=0; i < filter_count; i++) {
-
+   for (i=0; i < filter_count; i++) {
    // set-param.c
-   status = set_param(context,
-                      &filter_param[i],
-                      filter[i],
-                      &filter[i],
-                      use_default,
-                      &outputImage,
-                      &output_desc);
+      status = set_param(context,
+                         &filter_param[i],
+                         filter[i],
+                         &filter[i],
+                         use_default,
+                         &outputImage,
+                         &output_desc);
 
-   if (status != RIF_SUCCESS) {
-      printf("[ERROR] set_param function failed\n");
-      if (status == PARAM_ERROR) {
-         printf("[ERROR] There are too few or too many parameters\n"
-                "  https://github.com/Umio-Yasuno/rif-cmd/blob/main/FILTERS.md\n"
-                "  https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters.html\n");
+      if (status != RIF_SUCCESS) {
+         printf("[ERROR] set_param function failed\n");
+         if (status == PARAM_ERROR) {
+            printf("[ERROR] There are too few or too many parameters\n"
+                   "  https://github.com/Umio-Yasuno/rif-cmd/blob/main/FILTERS.md\n"
+                   "  https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/filters.html\n");
+         }
+         return -1;
       }
-      return -1;
-   }
 
 /*
  *    https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/info_setting_types/rif_compute_type.html
@@ -364,31 +363,30 @@ for (i=0; i < filter_count; i++) {
                                        (rif_image)(filter[i-1]), outputImage);
    }
 */
-/*
- *    without buffer
- */
-   
-   if (i % 2 == 0) {
-      rifCommandQueueAttachImageFilter(queue, filter[i], inputImage,  outputImage);
-   } else {
-      rifCommandQueueAttachImageFilter(queue, filter[i], outputImage, inputImage);
-   }
+   /*
+    *    without buffer
+    */
+      if (i % 2 == 0) {
+         rifCommandQueueAttachImageFilter(queue, filter[i], inputImage,  outputImage);
+      } else {
+         rifCommandQueueAttachImageFilter(queue, filter[i], outputImage, inputImage);
+      }
 
-   if (i == filter_count - 1 && i % 2 == 1) {
-      rif_image_filter fill_filter = nullptr;
+      if (i == filter_count - 1 && i % 2 == 1) {
+         rif_image_filter fill_filter = nullptr;
 
-      rifContextCreateImageFilter(context,
-                                  RIF_IMAGE_FILTER_CONVERT,
-                                  &fill_filter);
+         rifContextCreateImageFilter(context,
+                                     RIF_IMAGE_FILTER_CONVERT,
+                                     &fill_filter);
 
-      rifCommandQueueAttachImageFilter(queue, fill_filter, inputImage, outputImage);
-   }
-//    rifCommandQueueAttachImageFilter(queue, nullptr, inputImage,  outputImage);
-//    rifCommandQueueAttachImageFilter(queue, filter[i], inputImage, outputImage);
-}
+         rifCommandQueueAttachImageFilter(queue, fill_filter, inputImage, outputImage);
+      }
+   //    rifCommandQueueAttachImageFilter(queue, nullptr, inputImage,  outputImage);
+   //    rifCommandQueueAttachImageFilter(queue, filter[i], inputImage, outputImage);
+   }// set filter parm loop
 
-// Execute queue
-/*    RadeonImageFilter/RadeonImageFilters.h#L327
+/* Execute queue
+ *    RadeonImageFilter/RadeonImageFilters.h#L327
  *
  *    struct _rif_performance_statistic
  *    {
@@ -398,7 +396,6 @@ for (i=0; i < filter_count; i++) {
  *       rif_bool measure_compile_time;
  *    };
  */
-
    if (perf_output) {
       rif_performance_statistic perf = {0,1,0,1};
       struct timeval start = {0,0}, end = {0,0};
@@ -432,8 +429,7 @@ for (i=0; i < filter_count; i++) {
       if (status != RIF_SUCCESS) return -1;
 
 if (!strcmp(".jpg", output_ext) || !strcmp(".jpeg", output_ext)) {
-/*
- *     int stbi_write_jpg(char const *filename,
+/*     int stbi_write_jpg(char const *filename,
  *                        int w,
  *                        int h,
  *                        int comp,
@@ -446,8 +442,7 @@ if (!strcmp(".jpg", output_ext) || !strcmp(".jpeg", output_ext)) {
                            output_data, quality);
 
 } else if (!strcmp(".png", output_ext)) {
-/*
- *    int stbi_write_png(char const *filename,
+/*    int stbi_write_png(char const *filename,
  *                       int w,
  *                       int h,
  *                       int comp,
