@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <time.h>
 #include <sys/time.h>
 // #include <malloc.h>
@@ -111,7 +112,7 @@ static void exe_perf(rif_context ctx, rif_command_queue queue) {
    gettimeofday(&start, NULL);
 
    status = rifContextExecuteCommandQueue(ctx, queue, nullptr, nullptr, &perf);
-      if (status != RIF_SUCCESS) return -1;
+      if (status != RIF_SUCCESS) return;
 
    rifSyncronizeQueue(queue);
    gettimeofday(&end, NULL);
@@ -141,9 +142,8 @@ int main(int argc, char *argv[]) {
    for (i=1; i < argc; i++) {
       if (!strcmp("-i", argv[i])) {
          if (++i < argc) {
-            FILE *file_check  = fopen(argv[i], "r");
 
-            if (file_check) {
+            if (!access(argv[i], F_OK)) {
                input_path  = argv[i];
                input_ext   = strrchr(input_path, '.');
             } else {
