@@ -144,45 +144,44 @@ static int rif_cmd_write_image (rif_image       outputImage,
                                 rif_image_desc  *output_desc,
                                 int             quality)
 {
-#if 1
    int status;
    rif_uchar *output_data;
 
    status = rifImageMap(outputImage, RIF_IMAGE_MAP_READ, (void**)&output_data);
       if (status != RIF_SUCCESS) return -1;
 
-if (!strcmp(".jpg", output_ext) || !strcmp(".jpeg", output_ext)) {
-/*
- *     int stbi_write_jpg(char const *filename,
- *                        int w,
- *                        int h,
- *                        int comp,
- *                        const void *data,
- *                        int quality);
- */
-   status = stbi_write_jpg(output_path,
-                           output_desc->image_width,
-                           output_desc->image_height,
-                           output_desc->num_components,
-                           output_data,
-                           quality);
+   if (!strcmp(".jpg", output_ext) || !strcmp(".jpeg", output_ext)) {
+   /*
+    *     int stbi_write_jpg(char const *filename,
+    *                        int w,
+    *                        int h,
+    *                        int comp,
+    *                        const void *data,
+    *                        int quality);
+    */
+      status = stbi_write_jpg(output_path,
+                              output_desc->image_width,
+                              output_desc->image_height,
+                              output_desc->num_components,
+                              output_data,
+                              quality);
 
-} else if (!strcmp(".png", output_ext)) {
-/*
- *    int stbi_write_png(char const *filename,
- *                       int w,
- *                       int h,
- *                       int comp,
- *                       const void  *data,
- *                       int stride_in_bytes)
- */
-   status = stbi_write_png(output_path,
-                           output_desc->image_width,
-                           output_desc->image_height,
-                           output_desc->num_components,
-                           output_data,
-                           0);
-}
+   } else if (!strcmp(".png", output_ext)) {
+   /*
+    *    int stbi_write_png(char const *filename,
+    *                       int w,
+    *                       int h,
+    *                       int comp,
+    *                       const void  *data,
+    *                       int stride_in_bytes)
+    */
+      status = stbi_write_png(output_path,
+                              output_desc->image_width,
+                              output_desc->image_height,
+                              output_desc->num_components,
+                              output_data,
+                              0);
+   }
 
 #if 0
    status = ImageTools::SaveImage(outputImage, output_path);
