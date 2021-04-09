@@ -202,7 +202,7 @@ static int rif_cmd_write_image (rif_image       outputImage,
 
    rifImageUnmap(outputImage, output_data);
    stbi_image_free(output_data);
-#endif
+
    return 0;
 }
 
