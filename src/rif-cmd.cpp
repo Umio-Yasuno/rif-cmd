@@ -127,7 +127,8 @@ static void exe_perf(rif_context ctx, rif_command_queue queue)
    rifSyncronizeQueue(queue);
    gettimeofday(&end, NULL);
 
-   total_time        = (double)((end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / 1e6);
+   total_time        = ((double)(((end.tv_sec - start.tv_sec) * 1e6 + (end.tv_usec - start.tv_usec)))) / 1e6;
+//   printf("total_time: %f\n", total_time);
    exe_compile_time  = (double)(perf.execution_time / 1e9 + perf.compile_time / 1e3);
 
    printf("\nExecution time:\t\t%6.3fs\n"
