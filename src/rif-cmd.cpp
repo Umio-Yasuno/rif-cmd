@@ -206,6 +206,15 @@ static int rif_cmd_write_image (rif_image       outputImage,
    return 0;
 }
 
+static void print_context_info(rif_context context) {
+   char kernel_src[256], kernel_cache[256];
+   size_t ret;
+   rifContextGetInfo(context, RIF_CONTEXT_KERNELS_SOURCE_DIR, sizeof(kernel_src),   &kernel_src,   &ret);
+   rifContextGetInfo(context, RIF_CONTEXT_KERNELS_CACHE_DIR,  sizeof(kernel_cache), &kernel_cache, &ret);
+   printf("Kernel Source Dir: %s\n", kernel_src);
+   printf("Kernel Cache  Dir: %s\n", kernel_cache);
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -485,6 +494,8 @@ int main(int argc, char *argv[])
    //    rifCommandQueueAttachImageFilter(queue, filter[i], inputImage, outputImage);
    } // set filter parm loop
 
+   print_context_info(context);
+   printf("Execute\n");
 // Execute queue
    if (perf_output) {
       exe_perf(context, queue);
