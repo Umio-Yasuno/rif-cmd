@@ -44,46 +44,6 @@
 
 #define MAX_FILTER 9
 
-
-static void api_backend_print(int backend)
-{
-   char api_name[16];
-   size_t ret = sizeof(api_name);
-
-   switch (backend) {
-      case RIF_BACKEND_API_OPENCL:
-         strncpy(api_name, "OpenCL",  ret);
-         break;
-      case RIF_BACKEND_API_DIRECTX12: 
-         strncpy(api_name, "DX12",    ret);
-         break;
-      case RIF_BACKEND_API_METAL:
-         strncpy(api_name, "Metal",   ret);
-         break;
-      default:
-         strncpy(api_name, "Unknown", ret);
-         break;
-   }
-
-   printf("Backend API: \t %s\n", api_name);
-}
-
-static void get_device_info(int backend, int deviceid)
-{
-   char clinfo[128], d_name[128], vendor[128];
-   size_t ret;
-
-   rifGetDeviceInfo(backend, deviceid, RIF_DEVICE_NAME, 
-                     sizeof(d_name), &d_name, &ret);
-   rifGetDeviceInfo(backend, deviceid, RIF_DEVICE_VENDOR, 
-                     sizeof(vendor), &vendor, &ret);
-
-   printf("Vendor: \t %s\n"
-          "Device Name: \t %s\n\n",
-          vendor, d_name);
-
-}
-
 static void help_print()
 {
    printf("\nOPTIONS:\n"
@@ -101,130 +61,13 @@ static void help_print()
           "  -h, --help                    print help\n\n");
 }
 
-/*
- *    RadeonImageFilter/RadeonImageFilters.h#L327
- *
- *    struct _rif_performance_statistic
- *    {
- *       rif_uint64 execution_time;       // nanosecond, 1 / 1e9, 1e-9
- *       rif_bool measure_execution_time;
- *       rif_float  compile_time;         // millisecond, 1 / 1e3, 1e-3
- *       rif_bool measure_compile_time;
- *    };
- */
-static void exe_perf(rif_context ctx, rif_command_queue queue)
+int i, select_device = 0, quality = 0, backend = BACKEND_TYPE, filter_count = 0;
+bool use_default = false, perf_output = false;
+const char *input_path = NULL, *input_ext = NULL, *output_ext = NULL, *output_path = "out.png";
+Param filter_param[MAX_FILTER];
+
+static int opt_parse(int argc, char *argv[])
 {
-   uint8_t status = 0;
-   rif_performance_statistic perf = {0,1,0,1};
-   struct timeval start = {0,0}, end = {0,0};
-   double total_time, exe_compile_time;
-
-   gettimeofday(&start, NULL);
-
-   status = rifContextExecuteCommandQueue(ctx, queue, nullptr, nullptr, &perf);
-      if (status != RIF_SUCCESS) return;
-
-   rifSyncronizeQueue(queue);
-   gettimeofday(&end, NULL);
-
-   total_time        = ((double)(((end.tv_sec - start.tv_sec) * 1e6 + (end.tv_usec - start.tv_usec)))) / 1e6;
-//   printf("total_time: %f\n", total_time);
-   exe_compile_time  = (double)(perf.execution_time / 1e9 + perf.compile_time / 1e3);
-
-   printf("\nExecution time:\t\t%6.3fs\n"
-          "Kernel compile time:\t%6.3fs\n"
-          "Other (I/O etc) time:\t%6.3fs\n"
-          ,(double)(perf.execution_time / 1e9)
-          ,(perf.compile_time / 1e3)
-          ,(total_time - exe_compile_time));
-}
-
-static int rif_cmd_write_image (rif_image       outputImage,
-                                const char      *output_path,
-                                const char      *output_ext,
-                                rif_image_desc  *output_desc,
-                                int             quality)
-{
-   int status;
-   rif_uchar *output_data;
-
-   status = rifImageMap(outputImage, RIF_IMAGE_MAP_READ, (void**)&output_data);
-      if (status != RIF_SUCCESS) return -1;
-
-   if (!strcmp(".jpg", output_ext) || !strcmp(".jpeg", output_ext)) {
-   /*
-    *     int stbi_write_jpg(char const *filename,
-    *                        int w,
-    *                        int h,
-    *                        int comp,
-    *                        const void *data,
-    *                        int quality);
-    */
-      status = stbi_write_jpg(output_path,
-                              output_desc->image_width,
-                              output_desc->image_height,
-                              output_desc->num_components,
-                              output_data,
-                              quality);
-
-   } else if (!strcmp(".png", output_ext)) {
-   /*
-    *    int stbi_write_png(char const *filename,
-    *                       int w,
-    *                       int h,
-    *                       int comp,
-    *                       const void  *data,
-    *                       int stride_in_bytes)
-    */
-      status = stbi_write_png(output_path,
-                              output_desc->image_width,
-                              output_desc->image_height,
-                              output_desc->num_components,
-                              output_data,
-                              0);
-   }
-
-#if 0
-   status = ImageTools::SaveImage(outputImage, output_path);
-      if (status) {
-         printf("\nSuccess\n");
-      } else {
-         printf("\nError: output image\n");
-         return -1;
-      }
-#endif
-
-   if (status) {
-      printf("\nSuccess: %s\n", output_path);
-   } else {
-      printf("\nError: output image\n");
-      return -1;
-   }
-
-   rifImageUnmap(outputImage, output_data);
-   stbi_image_free(output_data);
-
-   return 0;
-}
-
-static void print_context_info(rif_context context) {
-   char kernel_src[256], kernel_cache[256];
-   size_t ret;
-   rifContextGetInfo(context, RIF_CONTEXT_KERNELS_SOURCE_DIR, sizeof(kernel_src),   &kernel_src,   &ret);
-   rifContextGetInfo(context, RIF_CONTEXT_KERNELS_CACHE_DIR,  sizeof(kernel_cache), &kernel_cache, &ret);
-   printf("Kernel Source Dir: %s\n", kernel_src);
-   printf("Kernel Cache  Dir: %s\n", kernel_cache);
-}
-
-
-int main(int argc, char *argv[])
-{
-   int i, select_device = 0, quality = 0, backend = BACKEND_TYPE, filter_count = 0;
-   bool use_default = false, perf_output = false;
-   const char *input_path = NULL, *input_ext = NULL, *output_ext = NULL, *output_path = "out.png";
-
-   Param filter_param[MAX_FILTER];
-
    for (i=1; i < argc; i++) {
       if (!strcmp("-i", argv[i])) {
          if (++i < argc) {
@@ -344,6 +187,219 @@ int main(int argc, char *argv[])
             return -1;
       }
    }
+   return 0;
+}
+
+static void api_backend_print(int backend)
+{
+   char api_name[16];
+   size_t ret = sizeof(api_name);
+
+   switch (backend) {
+      case RIF_BACKEND_API_OPENCL:
+         strncpy(api_name, "OpenCL",  ret);
+         break;
+      case RIF_BACKEND_API_DIRECTX12: 
+         strncpy(api_name, "DX12",    ret);
+         break;
+      case RIF_BACKEND_API_METAL:
+         strncpy(api_name, "Metal",   ret);
+         break;
+      default:
+         strncpy(api_name, "Unknown", ret);
+         break;
+   }
+
+   printf("Backend API: \t %s\n", api_name);
+}
+
+static void get_device_info(int backend, int deviceid)
+{
+   char clinfo[128], d_name[128], vendor[128];
+   size_t ret;
+
+   rifGetDeviceInfo(backend, deviceid, RIF_DEVICE_NAME, 
+                     sizeof(d_name), &d_name, &ret);
+   rifGetDeviceInfo(backend, deviceid, RIF_DEVICE_VENDOR, 
+                     sizeof(vendor), &vendor, &ret);
+
+   printf("Vendor: \t %s\n"
+          "Device Name: \t %s\n\n",
+          vendor, d_name);
+}
+
+/*
+ *    RadeonImageFilter/RadeonImageFilters.h#L327
+ *
+ *    struct _rif_performance_statistic
+ *    {
+ *       rif_uint64 execution_time;       // nanosecond, 1 / 1e9, 1e-9
+ *       rif_bool measure_execution_time;
+ *       rif_float  compile_time;         // millisecond, 1 / 1e3, 1e-3
+ *       rif_bool measure_compile_time;
+ *    };
+ */
+static void exe_perf(rif_context ctx, rif_command_queue queue)
+{
+   uint8_t status = 0;
+   rif_performance_statistic perf = {0,1,0,1};
+   struct timeval start = {0,0}, end = {0,0};
+   double total_time, exe_compile_time;
+
+   gettimeofday(&start, NULL);
+
+   status = rifContextExecuteCommandQueue(ctx, queue, nullptr, nullptr, &perf);
+      if (status != RIF_SUCCESS) return;
+
+   rifSyncronizeQueue(queue);
+   gettimeofday(&end, NULL);
+
+   total_time        = ((double)(((end.tv_sec - start.tv_sec) * 1e6 + (end.tv_usec - start.tv_usec)))) / 1e6;
+//   printf("total_time: %f\n", total_time);
+   exe_compile_time  = (double)(perf.execution_time / 1e9 + perf.compile_time / 1e3);
+
+   printf("\nExecution time:\t\t%6.3fs\n"
+          "Kernel compile time:\t%6.3fs\n"
+          "Other (I/O etc) time:\t%6.3fs\n"
+          ,(double)(perf.execution_time / 1e9)
+          ,(perf.compile_time / 1e3)
+          ,(total_time - exe_compile_time));
+}
+
+static int rif_cmd_write_image (rif_image       outputImage,
+                                const char      *output_path,
+                                const char      *output_ext,
+                                rif_image_desc  *output_desc,
+                                int             quality)
+{
+   int status = 0;
+   rif_uchar *output_data;
+
+   status = rifImageMap(outputImage, RIF_IMAGE_MAP_READ, (void**)&output_data);
+      if (status != RIF_SUCCESS) return status;
+
+   if (!strcmp(".jpg", output_ext) || !strcmp(".jpeg", output_ext)) {
+   /*
+    *     int stbi_write_jpg(char const *filename,
+    *                        int w,
+    *                        int h,
+    *                        int comp,
+    *                        const void *data,
+    *                        int quality);
+    */
+      status = stbi_write_jpg(output_path,
+                              output_desc->image_width,
+                              output_desc->image_height,
+                              output_desc->num_components,
+                              output_data,
+                              quality);
+
+   } else if (!strcmp(".png", output_ext)) {
+   /*
+    *    int stbi_write_png(char const *filename,
+    *                       int w,
+    *                       int h,
+    *                       int comp,
+    *                       const void  *data,
+    *                       int stride_in_bytes)
+    */
+      status = stbi_write_png(output_path,
+                              output_desc->image_width,
+                              output_desc->image_height,
+                              output_desc->num_components,
+                              output_data,
+                              0);
+   }
+
+#if 0
+   status = ImageTools::SaveImage(outputImage, output_path);
+      if (status) {
+         printf("\nSuccess\n");
+      } else {
+         printf("\nError: output image\n");
+         return -1;
+      }
+#endif
+
+   rifImageUnmap(outputImage, output_data);
+   stbi_image_free(output_data);
+
+   if (status) {
+      printf("\nSuccess: %s\n", output_path);
+   } else {
+      printf("\nError: output image\n");
+   }
+
+   return status;
+}
+
+static void print_context_info(rif_context context)
+{
+   char kernel_src[256], kernel_cache[256];
+   size_t ret;
+   rifContextGetInfo(context, RIF_CONTEXT_KERNELS_SOURCE_DIR, sizeof(kernel_src),   &kernel_src,   &ret);
+   rifContextGetInfo(context, RIF_CONTEXT_KERNELS_CACHE_DIR,  sizeof(kernel_cache), &kernel_cache, &ret);
+   printf("Kernel Source Dir: %s\n", kernel_src);
+   printf("Kernel Cache  Dir: %s\n", kernel_cache);
+}
+
+static void rif_cmd_attach_filter(rif_context          context,
+                                  rif_command_queue    queue,
+                                  rif_image_filter     filter,
+                                  int                  filter_number,
+                                  rif_image            inputImage,
+                                  rif_image            outputImage)
+{
+/*
+ *    https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/info_setting_types/rif_compute_type.html
+ *    RIF_COMPUTE_TYPE_FLOAT  0x0
+ *    RIF_COMPUTE_TYPE_HALF   0x1
+ *    https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/api/rifimagefiltersetcomputetype.html
+ *    rifImageFilterSetComputeType(filter, RIF_COMPUTE_TYPE_FLOAT);
+ */
+/*    with buffer
+ *    https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/combining_filters.html
+ */
+#if 0
+   if (i == 0) {
+   //      printf("\ti == 0\n");
+      rifImageFilterSetParameterImage(filter[i], "srcBuffer", inputImage);
+   } else if (i > 0 && i < filter_count - 1) {
+   //      printf("\ti > 0 && i < filter_count - 1\n");
+      rifImageFilterSetParameterImage(filter[i], "srcBuffer",
+                                      (rif_image)(filter[i-1]));
+   } else if (i == filter_count - 1) {
+   //      printf("\ti == filter_count - 1\n");
+      rifCommandQueueAttachImageFilter(queue, filter[i],
+                                       (rif_image)(filter[i-1]), outputImage);
+   }
+#endif
+   /* without buffer */
+   if (filter_number % 2 == 0) {
+      rifCommandQueueAttachImageFilter(queue, filter, inputImage,  outputImage);
+   } else {
+      rifCommandQueueAttachImageFilter(queue, filter, outputImage, inputImage);
+   }
+
+   if (filter_number == filter_count - 1 && filter_number % 2 == 1) {
+      rif_image_filter fill_filter = nullptr;
+
+      rifContextCreateImageFilter(context,
+                                  RIF_IMAGE_FILTER_CONVERT,
+                                  &fill_filter);
+
+      rifCommandQueueAttachImageFilter(queue, fill_filter, inputImage, outputImage);
+   }
+}
+
+
+int main(int argc, char *argv[])
+{
+
+   if (opt_parse(argc, argv) != 0) {
+      printf("Failed opt_parse function\n");
+      return -1;
+   }
 
    if (input_path == NULL) {
       printf("Error: Please enter the path of input image\n"
@@ -360,7 +416,7 @@ int main(int argc, char *argv[])
    api_backend_print(backend);
    get_device_info(backend, select_device);
 
-// First create context and queue
+   /* First create context and queue */
    int device_count = 0;
    status = rifGetDeviceCount(backend, &device_count);
       if (status != RIF_SUCCESS) return -1;
@@ -412,7 +468,7 @@ int main(int argc, char *argv[])
 
    inputImage = ImageTools::LoadImage(input_path, context);
 
-// Create output image
+/* Create output image */
    rif_image_desc    output_desc;
    size_t            retSize;
 
@@ -430,7 +486,7 @@ int main(int argc, char *argv[])
    rif_image_filter filter[MAX_FILTER] = { nullptr };
 
    for (i=0; i < filter_count; i++) {
-   // set-param.c
+      /* set-param.c */
       status = set_param(context,
                          &filter_param[i],
                          filter[i],
@@ -449,58 +505,20 @@ int main(int argc, char *argv[])
          return -1;
       }
 
-/*
- *    https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/info_setting_types/rif_compute_type.html
- *    RIF_COMPUTE_TYPE_FLOAT  0x0
- *    RIF_COMPUTE_TYPE_HALF   0x1
- *    https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/api/rifimagefiltersetcomputetype.html
- *    rifImageFilterSetComputeType(filter, RIF_COMPUTE_TYPE_FLOAT);
- *
- *    with buffer
- *    https://radeon-pro.github.io/RadeonProRenderDocs/en/rif/combining_filters.html
- */
-/*
-   if (i == 0) {
-   //      printf("\ti == 0\n");
-      rifImageFilterSetParameterImage(filter[i], "srcBuffer", inputImage);
-   } else if (i > 0 && i < filter_count - 1) {
-   //      printf("\ti > 0 && i < filter_count - 1\n");
-      rifImageFilterSetParameterImage(filter[i], "srcBuffer",
-                                      (rif_image)(filter[i-1]));
-   } else if (i == filter_count - 1) {
-   //      printf("\ti == filter_count - 1\n");
-      rifCommandQueueAttachImageFilter(queue, filter[i],
-                                       (rif_image)(filter[i-1]), outputImage);
-   }
-*/
-   /*
-    *    without buffer
-    */
-      if (i % 2 == 0) {
-         rifCommandQueueAttachImageFilter(queue, filter[i], inputImage,  outputImage);
-      } else {
-         rifCommandQueueAttachImageFilter(queue, filter[i], outputImage, inputImage);
-      }
-
-      if (i == filter_count - 1 && i % 2 == 1) {
-         rif_image_filter fill_filter = nullptr;
-
-         rifContextCreateImageFilter(context,
-                                     RIF_IMAGE_FILTER_CONVERT,
-                                     &fill_filter);
-
-         rifCommandQueueAttachImageFilter(queue, fill_filter, inputImage, outputImage);
-      }
-   //    rifCommandQueueAttachImageFilter(queue, nullptr, inputImage,  outputImage);
-   //    rifCommandQueueAttachImageFilter(queue, filter[i], inputImage, outputImage);
-   } // set filter parm loop
+      rif_cmd_attach_filter(context,
+                            queue,
+                            filter[i],
+                            i,
+                            inputImage,
+                            outputImage);
+   } /* set filter parm loop */
 
    print_context_info(context);
    printf("Execute\n");
-// Execute queue
+
+   /* Execute queue */
    if (perf_output) {
       exe_perf(context, queue);
-
    } else {
       status = rifContextExecuteCommandQueue(context, queue, nullptr, nullptr, nullptr);
          if (status != RIF_SUCCESS) return -1;
@@ -512,7 +530,7 @@ int main(int argc, char *argv[])
                        &output_desc,
                        quality);
 
-// Free resources
+   /* Free resources */
    for (i=0; i < filter_count; i++) {
       rifCommandQueueDetachImageFilter(queue, filter[i]);
       rifObjectDelete(filter[i]);
