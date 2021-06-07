@@ -218,16 +218,16 @@ extern int set_param(rif_context       context,
          return PARAM_ERROR;
       }
 
-/*
       output_desc->image_width  = (rif_uint)(output_desc->image_width  * ret_scale);
       output_desc->image_height = (rif_uint)(output_desc->image_height * ret_scale);
 
-      status = rifContextCreateImage(context, &output_desc, nullptr, &outputImage);
-         if (status != RIF_SUCCESS) return NULL;
+/*
+      int status = rifContextCreateImage(context, &output_desc, nullptr, &outputImage);
+         if (status != RIF_SUCCESS) return status;
 */
       rifImageFilterSetParameter2u(filter, "outSize",
-                                   (rif_uint)(output_desc->image_width  * ret_scale),
-                                   (rif_uint)(output_desc->image_height * ret_scale));
+                                   (rif_uint)(output_desc->image_width),
+                                   (rif_uint)(output_desc->image_height));
 
 
    } else if (!strcmp("dynamic_resample", filter_param->filter_name)) {

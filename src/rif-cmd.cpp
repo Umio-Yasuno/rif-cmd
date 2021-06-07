@@ -273,10 +273,11 @@ static int rif_cmd_write_image (rif_image       outputImage,
                                 int             quality)
 {
    int status = 0;
-   rif_uchar *output_data;
+   rif_uchar *output_data = nullptr;
 
    status = rifImageMap(outputImage, RIF_IMAGE_MAP_READ, (void**)&output_data);
       if (status != RIF_SUCCESS) return status;
+   // printf("%d, %d", output_desc->image_width, output_desc->image_height);
 
    if (!strcmp(".jpg", output_ext) || !strcmp(".jpeg", output_ext)) {
    /*

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 project("rif-cmd" CXX)
 
 function(lib_name OS)
-   link_directories("RadeonImageFilter/${OS}/Dynamic" "RadeonImageFilter/${OS}/Static")
+   link_directories("RadeonImageFilter/${OS}/Dynamic")
 endfunction()
 
 if(WIN32)
