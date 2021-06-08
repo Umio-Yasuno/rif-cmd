@@ -59,9 +59,7 @@ $ ./rif-cmd -i input.png -o output.png -f bloom "0.1,0,0.1,1" -f motion_blur "5,
 ## Known Issues
 
   * AI Upscale filter not work with gfx803 + MIOpen v2.0.5.  
-    * It's probably problem MIOpen.
-      * [ROCm 2.7 Unable to find a suitable algorithm for doing forward convolution · Issue #869 · RadeonOpenCompute/ROCm](https://github.com/RadeonOpenCompute/ROCm/issues/869)
-  
+    * <https://github.com/GPUOpen-LibrariesAndSDKs/RadeonImageFilter/issues/13>
   * Filter $X is not implemented.
     * I'll add it soon, maybe.
 
